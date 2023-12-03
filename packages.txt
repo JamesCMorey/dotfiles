@@ -1,0 +1,3 @@
+glibc-doc manpages-dev
+vim tmux git
+ctabs cscope
