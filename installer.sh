@@ -1,7 +1,7 @@
 #!/bin/bash
 
-ln -s ~/dotfiles/.vimrc ~/.vimrc
-ln -s ~/dotfiles/.tmux.conf ~/.tmux.conf
-ln -s ~/dotfiles/.ctags ~/.ctags
+ln -s $(pwd)/.vimrc ~/.vimrc
+ln -s $(pwd)/.tmux.conf ~/.tmux.conf
+ln -s $(pwd)/.ctags ~/.ctags
 
-sudo apt update && sudo apt upgrade && sudo apt install $(cat packages.txt) -y
+sudo apt update && sudo apt install $(cat packages.txt) -y
