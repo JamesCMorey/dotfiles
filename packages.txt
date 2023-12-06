@@ -1,3 +1,1 @@
-glibc-doc manpages-dev
-vim tmux git
-ctabs cscope
+glibc-doc manpages-dev vim tmux git exuberant-ctags cscope
