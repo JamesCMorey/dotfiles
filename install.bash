@@ -82,11 +82,11 @@ sudo apt install -y wireguard resolvconf
 
 ###### Configuration ######
 echo "Linking dotfiles..."
-ln -s ./files/vimrc ~/.vimrc
-ln -s ./files/tmux.conf ~/.tmux.conf
-ln -s ./files/ctags ~/.ctags
+ln -s $(pwd)/files/vimrc ~/.vimrc
+ln -s $(pwd)/files/tmux.conf ~/.tmux.conf
+ln -s $(pwd)/files/ctags ~/.ctags
 
-sudo ln -s ./files/auto-update /etc/cron.daily/
+sudo ln -s $(pwd)/files/auto-update /etc/cron.daily/
 
 if [[ ${confgit,,} == "y" ]]; then
 	echo "Configuring git..."
