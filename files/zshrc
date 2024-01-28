@@ -1,0 +1,13 @@
+autoload -U colors && colors
+
+alias ls="ls --color"
+alias la="ls -a --color"
+alias l="ls -la --color"
+alias ar="vim ~/archive/main.wiki"
+alias :q="exit"
+
+PS1="%{$fg[green]%}%~%{$reset_color%} > "
+
+# if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+#	exec tmux
+# fi
