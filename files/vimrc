@@ -1,5 +1,26 @@
+call plug#begin()
+
+Plug 'vimwiki/vimwiki'
+Plug 'preservim/vim-markdown'
+Plug 'vim/colorschemes'
+" https://castel.dev/post/lecture-notes-1/#latex-snippets
+" Plug 'lervag/vimtex'
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'preservim/nerdtree'
+Plug 'bling/vim-bufferline'
+
+call plug#end()
+
+
 syntax on
 set t_Co=256
+colorscheme habamax
+set cursorline
+set nu rnu
+set ruler
 
 set tags+=./tags;/
 set nocompatible
@@ -16,30 +37,10 @@ set shiftwidth=8
 
 set textwidth=80
 set colorcolumn=81
-set cursorline
 set nospell
-set nu rnu
-set ruler
 set tabpagemax=20
+
 let mapleader = ' '
-
-call plug#begin()
-
-Plug 'vimwiki/vimwiki'
-Plug 'preservim/vim-markdown'
-Plug 'vim/colorschemes'
-" https://castel.dev/post/lecture-notes-1/#latex-snippets
-" Plug 'lervag/vimtex'
-
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
-Plug 'preservim/nerdtree'
-Plug 'bling/vim-bufferline'
-Plug 'xavierd/clang_complete'
-
-call plug#end()
-colorscheme habamax
 
 " Open the existing NERDTree on each new tab.
 autocmd BufWinEnter * if &buftype != 'quickfix' && getcmdwintype() == '' | silent NERDTreeMirror | endif
@@ -48,11 +49,20 @@ nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
+" Window Navigation
 nnoremap <leader>g <C-W>w
-" nnoremap <leader>m <esc>:b
-nnoremap <leader>m <esc>:Buffers<CR>
-nnoremap <leader>f <esc>:Files<CR>
-nnoremap <leader>s <esc>:source ~/.vimrc<CR>
+
+" Buffer Navigation
+nnoremap <leader>n :bn<CR>
+nnoremap <leader>p :bp<CR>
+nnoremap <leader>d :bd<CR>
+nnoremap <leader>m :w<CR>:Buffers<CR>
+nnoremap <leader>f :w<CR>:Files<CR>
+
+" Misc Remaps
+nnoremap <leader>s :source ~/.vimrc<CR>
+inoremap kj <ESC>
+inoremap {<CR> {<CR>}<esc>O
 
 set backup
 set backupdir=~/.vim/backup//
@@ -81,8 +91,6 @@ autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
-inoremap kj <ESC>
-inoremap {<CR> {<CR>}<esc>O
 
+" delete trailing whitespace
 autocmd BufWritePre * :%s/\s\+$//e
-
