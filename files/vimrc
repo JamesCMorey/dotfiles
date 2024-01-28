@@ -51,6 +51,7 @@ nnoremap <C-f> :NERDTreeFind<CR>
 nnoremap <leader>g <C-W>w
 " nnoremap <leader>m <esc>:b
 nnoremap <leader>m <esc>:Buffers<CR>
+nnoremap <leader>f <esc>:Files<CR>
 nnoremap <leader>s <esc>:source ~/.vimrc<CR>
 
 set backup
