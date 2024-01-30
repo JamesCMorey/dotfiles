@@ -3,7 +3,7 @@ autoload -U colors && colors
 alias ls="ls --color"
 alias la="ls -a --color"
 alias l="ls -la --color"
-alias ar="vim ~/archive/main.wiki"
+alias ar="vim ~/archive/main.*"
 alias :q="exit"
 
 PS1="%{$fg[green]%}%~%{$reset_color%} > "
