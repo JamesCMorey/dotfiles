@@ -32,15 +32,17 @@ set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
 
-"filetype plugin indent off
-"set smartindent
-"set autoindent
+" makes it so that there isn't an auto indent after function header
+filetype plugin indent off
+set noautoindent
+" still want some auto indenting though
+set smartindent
 set tabstop=8
 set shiftwidth=8
 
 set textwidth=80
 set colorcolumn=81
-set nospell
+set spell
 set tabpagemax=20
 
 let mapleader = ' '
