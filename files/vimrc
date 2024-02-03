@@ -15,7 +15,7 @@ Plug 'bling/vim-bufferline'
 call plug#end()
 
 let g:vimwiki_list = [{'path': '~/archive',
-                       \ 'syntax': 'default',
+                       \ 'syntax': 'markdown',
                        \ 'ext': '.md'}]
 
 syntax on
@@ -66,6 +66,8 @@ nnoremap <leader>p :bp<CR>
 nnoremap <leader>d :bd<CR>
 nnoremap <leader>m :w<CR>:Buffers<CR>
 nnoremap <leader>f :w<CR>:Files<CR>
+" close all buffers except the current one
+nnoremap <leader>c :%bd\|e#\|bd#<CR>
 
 " Misc Remaps
 nnoremap <leader>s :source ~/.vimrc<CR>
