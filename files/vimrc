@@ -33,12 +33,13 @@ set fenc=utf-8
 set termencoding=utf-8
 
 " makes it so that there isn't an auto indent after function header
-filetype plugin indent off
-autocmd BufRead,BufNewFile *.md filetype plugin indent on
-set noautoindent
-" still want some auto indenting though
+" filetype plugin indent off
+" autocmd BufRead,BufNewFile *.md filetype plugin indent on
+" set autoindent
+" Otherwise the filetype indent syntax will be applied after set nocindent
+autocmd FileType c set nocindent
+" still want some auto indenting after {} though
 set smartindent
-
 
 set tabstop=8
 set shiftwidth=8
@@ -61,9 +62,9 @@ nnoremap <C-f> :NERDTreeFind<CR>
 nnoremap <leader>g <C-W>w
 
 " Buffer Navigation
-nnoremap <leader>n :bn<CR>
-nnoremap <leader>p :bp<CR>
-nnoremap <leader>d :bd<CR>
+nnoremap <leader>n :w<CR>:bn<CR>
+nnoremap <leader>p :w<CR>:bp<CR>
+nnoremap <leader>d :w<CR>:bd<CR>
 nnoremap <leader>m :w<CR>:Buffers<CR>
 nnoremap <leader>f :w<CR>:Files<CR>
 " close all buffers except the current one
@@ -71,8 +72,11 @@ nnoremap <leader>c :%bd\|e#\|bd#<CR>
 
 " Misc Remaps
 nnoremap <leader>s :source ~/.vimrc<CR>
-inoremap kj <ESC>
 inoremap {<CR> {<CR>}<esc>O
+inoremap kj <ESC>
+inoremap ло <ESC>
+set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz
+" noremap <leader>ru :set keymap=russian-jcukenwin<CR>
 
 set backup
 set backupdir=~/.vim/backup//
@@ -87,6 +91,7 @@ set directory=~/.vim/swp//
 "let g:vimtex_quickfix_mode=0
 "set conceallevel=1
 "let g:tex_conceal='abdmg'
+
 
 " trailing whitespaces
 " autocmd BufWinEnter <buffer> match Error /\s\+$/
