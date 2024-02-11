@@ -3,20 +3,11 @@ call plug#begin()
 Plug 'vimwiki/vimwiki'
 Plug 'preservim/vim-markdown'
 Plug 'vim/colorschemes'
-" https://castel.dev/post/lecture-notes-1/#latex-snippets
-" Plug 'lervag/vimtex'
-
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
-Plug 'preservim/nerdtree'
 Plug 'bling/vim-bufferline'
 
 call plug#end()
 
-let g:vimwiki_list = [{'path': '~/archive',
-                       \ 'syntax': 'markdown',
-                       \ 'ext': '.md'}]
+let g:vimwiki_list = [{'path': '~/archive', 'syntax': 'markdown', 'ext': '.md'}]
 
 syntax on
 set t_Co=256
@@ -32,15 +23,8 @@ set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
 
-" makes it so that there isn't an auto indent after function header
-" filetype plugin indent off
-" autocmd BufRead,BufNewFile *.md filetype plugin indent on
-" set autoindent
-" Otherwise the filetype indent syntax will be applied after set nocindent
 autocmd FileType c set nocindent
-" still want some auto indenting after {} though
 set smartindent
-
 set tabstop=8
 set shiftwidth=8
 
@@ -51,13 +35,6 @@ set tabpagemax=20
 
 let mapleader = ' '
 
-" Open the existing NERDTree on each new tab.
-autocmd BufWinEnter * if &buftype != 'quickfix' && getcmdwintype() == '' | silent NERDTreeMirror | endif
-nnoremap <leader>t :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
-
 " Window Navigation
 nnoremap <leader>g <C-W>w
 
@@ -65,8 +42,7 @@ nnoremap <leader>g <C-W>w
 nnoremap <leader>n :w<CR>:bn<CR>
 nnoremap <leader>p :w<CR>:bp<CR>
 nnoremap <leader>d :w<CR>:bd<CR>
-nnoremap <leader>m :w<CR>:Buffers<CR>
-nnoremap <leader>f :w<CR>:Files<CR>
+nnoremap <leader>b :w<CR>:b
 " close all buffers except the current one
 nnoremap <leader>c :%bd\|e#\|bd#<CR>
 
@@ -74,9 +50,6 @@ nnoremap <leader>c :%bd\|e#\|bd#<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
-inoremap ло <ESC>
-set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz
-" noremap <leader>ru :set keymap=russian-jcukenwin<CR>
 
 set backup
 set backupdir=~/.vim/backup//
@@ -86,26 +59,5 @@ set undodir=~/.vim/undodir//
 
 set directory=~/.vim/swp//
 
-"let g:tex_flavor='latex'
-"let g:vimtex_view_method='zathura'
-"let g:vimtex_quickfix_mode=0
-"set conceallevel=1
-"let g:tex_conceal='abdmg'
-
-
-" trailing whitespaces
-" autocmd BufWinEnter <buffer> match Error /\s\+$/
-" autocmd InsertEnter <buffer> match Error /\s\+\%#\@<!$/
-" autocmd InsertLeave <buffer> match Error /\s\+$/
-" autocmd BufWinLeave <buffer> call clearmatches()
-
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
-
-
-" delete trailing whitespace
+" delete trailing white space upon write
 autocmd BufWritePre * :%s/\s\+$//e
