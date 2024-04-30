@@ -3,7 +3,11 @@ call plug#begin()
 Plug 'vimwiki/vimwiki'
 Plug 'preservim/vim-markdown'
 Plug 'vim/colorschemes'
-Plug 'bling/vim-bufferline'
+"Plug 'bling/vim-bufferline'
+Plug 'bfrg/vim-cpp-modern'
+Plug 'aklt/plantuml-syntax'
+Plug 'tyru/open-browser.vim'
+Plug 'weirongxu/plantuml-previewer.vim'
 
 call plug#end()
 
@@ -15,6 +19,8 @@ colorscheme habamax
 set cursorline
 set nu rnu
 set ruler
+set incsearch
+set nowrap
 
 set tags+=./tags;/
 set nocompatible
@@ -23,7 +29,8 @@ set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
 
-autocmd FileType c set nocindent
+autocmd FileType * set nocindent
+hi! link TODO Boolean
 set smartindent
 set tabstop=8
 set shiftwidth=8
@@ -42,7 +49,7 @@ nnoremap <leader>g <C-W>w
 nnoremap <leader>n :w<CR>:bn<CR>
 nnoremap <leader>p :w<CR>:bp<CR>
 nnoremap <leader>d :w<CR>:bd<CR>
-nnoremap <leader>b :w<CR>:b
+nnoremap <leader>b :w<CR>:ls<CR>:b<space>
 " close all buffers except the current one
 nnoremap <leader>c :%bd\|e#\|bd#<CR>
 
@@ -50,6 +57,7 @@ nnoremap <leader>c :%bd\|e#\|bd#<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
+nnoremap <CR> i<CR>
 
 set backup
 set backupdir=~/.vim/backup//
