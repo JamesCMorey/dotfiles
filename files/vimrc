@@ -1,5 +1,8 @@
 call plug#begin()
 
+Plug 'preservim/nerdtree'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'vimwiki/vimwiki'
 Plug 'preservim/vim-markdown'
 Plug 'vim/colorschemes'
@@ -46,6 +49,7 @@ let mapleader = ' '
 nnoremap <leader>g <C-W>w
 
 " Buffer Navigation
+nnoremap <leader>gb :w<CR>:Buffers<CR>
 nnoremap <leader>n :w<CR>:bn<CR>
 nnoremap <leader>p :w<CR>:bp<CR>
 nnoremap <leader>d :w<CR>:bd<CR>
@@ -54,6 +58,7 @@ nnoremap <leader>b :w<CR>:ls<CR>:b<space>
 nnoremap <leader>c :%bd\|e#\|bd#<CR>
 
 " Misc Remaps
+nnoremap <leader>f :w<CR>:Files<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
