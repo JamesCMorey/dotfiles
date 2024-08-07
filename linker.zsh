@@ -14,3 +14,4 @@ mkdir $(pwd)/.vim
 ln -s $(pwd)/files/tmux.conf ~/.tmux.conf
 ln -s $(pwd)/files/ctags ~/.ctags
 ln -s $(pwd)/files/zshrc ~/.zshrc
+ln -s $(pwd)/files/vimrc ~/.vimrc
