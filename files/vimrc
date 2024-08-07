@@ -11,14 +11,28 @@ Plug 'bfrg/vim-cpp-modern'
 Plug 'aklt/plantuml-syntax'
 Plug 'tyru/open-browser.vim'
 Plug 'weirongxu/plantuml-previewer.vim'
+Plug 'chriskempson/base16-vim'
+Plug 'manuelmayr/C0Vim'
 
+"Plug 'https://github.com/ryanoasis/vim-devicons'
 call plug#end()
 
-let g:vimwiki_list = [{'path': '~/archive', 'syntax': 'markdown', 'ext': '.md'}]
+"let g:NERDTreeDirArrowExpandable="+"
+"let g:NERDTreeDirArrowCollapsible="~"
+set encoding=UTF-8
 
-syntax on
+let g:vimwiki_list = [{'path': '~/files', 'syntax': 'markdown', 'ext': '.md'}]
+
+if !exists('g:syntax_on')
+		syntax enable
+endif
+
 set t_Co=256
-colorscheme habamax
+let base16colorspace=256
+set termguicolors
+colorscheme base16-espresso
+highlight Normal ctermbg=NONE
+highlight nonText ctermbg=NONE
 set cursorline
 set nu rnu
 set ruler
@@ -38,35 +52,36 @@ set smartindent
 set tabstop=8
 set shiftwidth=8
 
-"set textwidth=80
-"set colorcolumn=81
 set textwidth=80
 set colorcolumn=81
-set sw=8 ts=8
-
-set spell
+" set spell
 set tabpagemax=20
 
 let mapleader = ' '
 
 " Window Navigation
 nnoremap <leader>g <C-W>w
+nnoremap <leader>t :NERDTree<CR>
 
 " Buffer Navigation
-nnoremap <leader>gb :w<CR>:Buffers<CR>
-nnoremap <leader>n :w<CR>:bn<CR>
-nnoremap <leader>p :w<CR>:bp<CR>
-nnoremap <leader>d :w<CR>:bd<CR>
-nnoremap <leader>b :w<CR>:ls<CR>:b<space>
+nnoremap <leader>n :bn!<CR>
+nnoremap <leader>p :bp!<CR>
+nnoremap <leader>d :bd<CR>
+nnoremap <leader>b :ls<CR>:b<space>
 " close all buffers except the current one
 nnoremap <leader>c :%bd\|e#\|bd#<CR>
 
 " Misc Remaps
-nnoremap <leader>f :w<CR>:Files<CR>
-nnoremap <leader>s :source ~/.vimrc<CR>
+nnoremap <leader>S :source ~/.vimrc<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
-nnoremap <CR> i<CR>
+nnoremap <ESC><ESC> :nohl<CR>
+xnoremap rn :s/[0-9]*\./0./<CR>gvg<C-a>
+
+" fuzzy finder
+nnoremap <leader>sb :w<CR>:Buffers<CR>
+nnoremap <leader>sf :w<CR>:Files<CR>
+nnoremap <leader>sg :w<CR>:RG<CR>
 
 set backup
 set backupdir=~/.vim/backup//
