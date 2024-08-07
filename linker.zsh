@@ -8,9 +8,10 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 
  mkdir $(pwd)/vim
 # ln -s $(pwd)/vim ~/.vim
- mkdir -p ~/.vim/swp
- mkdir -p ~/.vim/backup
- mkdir -p ~/.vim/undodir
+ln -s $(pwd)/files/vimrc ~/.vimrc
+mkdir -p ~/.vim/swp
+mkdir -p ~/.vim/backup
+mkdir -p ~/.vim/undodir
 
 ln -s $(pwd)/files/bashrc ~/.bashrc
 ln -s $(pwd)/files/tmux.conf ~/.tmux.conf

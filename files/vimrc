@@ -11,14 +11,15 @@ Plug 'bfrg/vim-cpp-modern'
 Plug 'aklt/plantuml-syntax'
 Plug 'tyru/open-browser.vim'
 Plug 'weirongxu/plantuml-previewer.vim'
+Plug 'chriskempson/base16-vim'
+Plug 'mattn/calendar-vim'
 
 call plug#end()
 
-let g:vimwiki_list = [{'path': '~/archive', 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{ 'path': '~/files', 'syntax': 'markdown', 'ext': '.md', 'diary_rel_path': 'log' }]
 
 syntax on
 set t_Co=256
-colorscheme habamax
 set cursorline
 set nu rnu
 set ruler
@@ -46,19 +47,20 @@ set tabpagemax=20
 let mapleader = ' '
 
 " Window Navigation
-nnoremap <leader>g <C-W>w
+" requires 'w' to be pressed twice to switch pane
+nnoremap <leader>wg <C-W><C-W>l
 
 " Buffer Navigation
-nnoremap <leader>gb :w<CR>:Buffers<CR>
+nnoremap <leader>b :w<CR>:Buf<CR>
 nnoremap <leader>n :w<CR>:bn<CR>
 nnoremap <leader>p :w<CR>:bp<CR>
 nnoremap <leader>d :w<CR>:bd<CR>
-nnoremap <leader>b :w<CR>:ls<CR>:b<space>
 " close all buffers except the current one
-nnoremap <leader>c :%bd\|e#\|bd#<CR>
+nnoremap <leader>cb :%bd\|e#\|bd#<CR>
 
 " Misc Remaps
 nnoremap <leader>f :w<CR>:Files<CR>
+nnoremap <leader>g :w<CR>:RG<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
