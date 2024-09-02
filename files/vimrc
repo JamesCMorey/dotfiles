@@ -15,9 +15,37 @@ Plug 'chriskempson/base16-vim'
 Plug 'mattn/calendar-vim'
 Plug 'manuelmayr/C0Vim'
 "Plug 'https://github.com/ryanoasis/vim-devicons'
+Plug 'lervag/vimtex'
+Plug 'lervag/vimtex', { 'tag': 'v2.15' }
 call plug#end()
 
-let g:vimwiki_list = [{ 'path': '~/files', 'syntax': 'markdown', 'ext': '.md', 'diary_rel_path': 'log' }]
+" VIMWIKI START
+"let g:vimwiki_list = [{ 'path': '~/files', 'syntax': 'markdown', 'ext': '.md', 'diary_rel_path': 'Log'}]
+let wiki = {}
+let wiki.path = '~/files'
+let wiki.syntax = 'markdown'
+let wiki.ext = '.md'
+let wiki.diary_rel_path = 'Log'
+let g:vimwiki_markdown_link_ext = 1
+
+" Code block syntax highlighting
+let g:vimwiki_folding = 'expr'
+let g:vimwiki_syntax = 'default'
+let g:vimwiki_code_highlight = 1
+
+" Make it so that the syntax highlighting is triggered immediatly and the file
+" doesn't need to be reopened or have filetype=vimwiki set to refresh syntax
+autocmd BufRead,BufNewFile *.md set filetype=vimwiki
+autocmd BufWritePost,BufReadPost *.md set filetype=vimwiki
+
+let g:vimwiki_list = [wiki]
+
+au BufNewFile ~/files/*.md :silent 0r !~/.vim/bin/basic-template.py '%'
+au BufNewFile ~/files/Log/*.md :silent 0r !~/.vim/bin/log-template.py '%'
+
+" VIMWIKI END
+
+set backspace=indent,eol,start
 "let g:NERDTreeDirArrowExpandable="+"
 "let g:NERDTreeDirArrowCollapsible="~"
 set encoding=UTF-8
@@ -45,6 +73,7 @@ set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
 
+"autocmd Filetype tex setl updatetime=1
 autocmd FileType * set nocindent
 hi! link TODO Boolean
 set smartindent
@@ -71,7 +100,7 @@ nnoremap <leader>b :w<CR>:Buf<CR>
 nnoremap <leader>n :bn!<CR>
 nnoremap <leader>p :bp!<CR>
 nnoremap <leader>d :bd<CR>
-"
+
 " close all buffers except the current one
 nnoremap <leader>cb :%bd\|e#\|bd#<CR>
 
@@ -79,10 +108,13 @@ nnoremap <leader>cb :%bd\|e#\|bd#<CR>
 nnoremap <leader>f :w<CR>:Files<CR>
 nnoremap <leader>g :w<CR>:RG<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
+nnoremap <leader>dn :VimwikiDiaryNextDay<CR>
+nnoremap <leader>dp :VimwikiDiaryPrevDay<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
 nnoremap <ESC><ESC> :nohl<CR>
 xnoremap rn :s/[0-9]*\./0./<CR>gvg<C-a>
+nmap <leader>l :LLPStartPreview<cr>
 
 " fuzzy finder
 nnoremap <leader>sb :w<CR>:Buffers<CR>
