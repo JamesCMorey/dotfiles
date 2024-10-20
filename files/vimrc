@@ -54,10 +54,11 @@ if !exists('g:syntax_on')
 		syntax enable
 endif
 
-set t_Co=256
+colorscheme sorbet
+"set t_Co=256
 "let base16colorspace=256
-"set termguicolors
 "colorscheme base16-espresso
+"set termguicolors
 "highlight Normal ctermbg=NONE
 "highlight nonText ctermbg=NONE
 set cursorline
@@ -77,8 +78,7 @@ set termencoding=utf-8
 autocmd FileType * set nocindent
 hi! link TODO Boolean
 set smartindent
-set tabstop=8
-set shiftwidth=8
+set sw=4 ts=4 expandtab
 
 set textwidth=80
 set colorcolumn=81
@@ -108,13 +108,14 @@ nnoremap <leader>cb :%bd\|e#\|bd#<CR>
 nnoremap <leader>f :w<CR>:Files<CR>
 nnoremap <leader>g :w<CR>:RG<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
-nnoremap <leader>dn :VimwikiDiaryNextDay<CR>
-nnoremap <leader>dp :VimwikiDiaryPrevDay<CR>
+"nnoremap <leader>dn :VimwikiDiaryNextDay<CR>
+"nnoremap <leader>dp :VimwikiDiaryPrevDay<CR>
 inoremap {<CR> {<CR>}<esc>O
 inoremap kj <ESC>
 nnoremap <ESC><ESC> :nohl<CR>
 xnoremap rn :s/[0-9]*\./0./<CR>gvg<C-a>
 nmap <leader>l :LLPStartPreview<cr>
+nnoremap <leader>e :Explore<CR>
 
 " fuzzy finder
 nnoremap <leader>sb :w<CR>:Buffers<CR>
