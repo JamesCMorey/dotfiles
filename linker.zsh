@@ -6,8 +6,6 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 mkdir $(pwd)/.vim
-# ln -s $(pwd)/vim ~/.vim
-ln -s $(pwd)/files/vimrc ~/.vimrc
 mkdir -p ~/.vim/swp
 mkdir -p ~/.vim/backup
 mkdir -p ~/.vim/undodir
