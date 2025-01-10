@@ -109,7 +109,14 @@ if ! shopt -oq posix; then
     . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
+  elif [ -f /etc/profile.d/bash_completion.sh ]; then
+      . /etc/profile.d/bash_completion.sh
   fi
 fi
 
+alias cmd="cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug"
+alias cmr="cmake -S . -B build -DCMAKE_BUILD_TYPE=Release"
+alias cmm="cmake --build build"
+
 source ~/.bash_profile
+
