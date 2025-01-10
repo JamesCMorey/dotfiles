@@ -1,22 +1,24 @@
 call plug#begin()
 
+Plug 'vim/colorschemes'
+Plug 'bfrg/vim-cpp-modern'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'vimwiki/vimwiki'
 Plug 'preservim/vim-markdown'
-Plug 'vim/colorschemes'
+
 "Plug 'bling/vim-bufferline'
-Plug 'bfrg/vim-cpp-modern'
-Plug 'aklt/plantuml-syntax'
-Plug 'tyru/open-browser.vim'
-Plug 'weirongxu/plantuml-previewer.vim'
-Plug 'chriskempson/base16-vim'
-Plug 'mattn/calendar-vim'
-Plug 'manuelmayr/C0Vim'
+"Plug 'chriskempson/base16-vim'
+"Plug 'aklt/plantuml-syntax'
+"Plug 'tyru/open-browser.vim'
+"Plug 'weirongxu/plantuml-previewer.vim'
+"Plug 'mattn/calendar-vim'
+"Plug 'manuelmayr/C0Vim'
 "Plug 'https://github.com/ryanoasis/vim-devicons'
-Plug 'lervag/vimtex'
-Plug 'lervag/vimtex', { 'tag': 'v2.15' }
+"Plug 'lervag/vimtex'
+"Plug 'lervag/vimtex', { 'tag': 'v2.15' }
+"
 call plug#end()
 
 " VIMWIKI START

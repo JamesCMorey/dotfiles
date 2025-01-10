@@ -43,7 +43,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -118,5 +118,22 @@ alias cmd="cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug"
 alias cmr="cmake -S . -B build -DCMAKE_BUILD_TYPE=Release"
 alias cmm="cmake --build build"
 
-source ~/.bash_profile
+#source ~/.bash_profile
 
+alias ls="ls --color"
+alias la="ls -a --color"
+alias l="ls -la --color"
+alias :q="exit"
+
+# colored man pages
+export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
+export LESS_TERMCAP_md=$'\e[1;33m'     # begin blink
+export LESS_TERMCAP_so=$'\e[01;44;37m' # begin reverse video
+export LESS_TERMCAP_us=$'\e[01;37m'    # begin underline
+export LESS_TERMCAP_me=$'\e[0m'        # reset bold/blink
+export LESS_TERMCAP_se=$'\e[0m'        # reset reverse video
+export LESS_TERMCAP_ue=$'\e[0m'        # reset underline
+export GROFF_NO_SGR=1                  # for konsole and gnome-terminal
+
+export GPG_TTY=$(tty) # fix bug with gpg signature for commits
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
