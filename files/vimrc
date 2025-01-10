@@ -105,6 +105,7 @@ nnoremap <leader>d :bd<CR>
 nnoremap <leader>cb :%bd\|e#\|bd#<CR>
 
 " Misc Remaps
+nnoremap <leader>h :Header <C-r>=input("Title: ")<CR><CR>
 nnoremap <leader>f :w<CR>:Files<CR>
 nnoremap <leader>g :w<CR>:RG<CR>
 nnoremap <leader>s :source ~/.vimrc<CR>
@@ -132,3 +133,37 @@ set directory=~/.vim/swp//
 
 " delete trailing white space upon write
 autocmd BufWritePre * :%s/\s\+$//e
+
+function! InsertDynamicHeader(title)
+    " Define total width (optional, can be fixed or calculated based on title length)
+    let l:total_width = max([76, len(a:title) + 20]) " Ensure at least 20 padding
+    let l:divider = repeat("*", l:total_width)
+
+    " Calculate padding
+    let l:title_length = len(a:title)
+    let l:total_padding = l:total_width - l:title_length " Account for borders
+    let l:left_padding = repeat(" ", l:total_padding / 2)
+    let l:right_padding = repeat(" ", l:total_padding - len(l:left_padding))
+
+    " Construct header
+    let l:header = "/*" . l:left_padding . a:title . l:right_padding . "*/"
+    call append('.', "/*" . l:divider . "*/")
+    call append('.', l:header)
+    call append('.', "/*" . l:divider . "*/")
+endfunction
+
+command! -nargs=1 Header call InsertDynamicHeader(<q-args>)
+
+"function! InsertCenteredHeader(title)
+"    let l:divider = repeat("*", 78)
+"    let l:title_length = len(a:title)
+"    let l:total_padding = 78 - l:title_length - 29*2
+"    let l:left_padding = repeat(" ", l:total_padding / 2)
+"    let l:right_padding = repeat(" ", l:total_padding - len(l:left_padding))
+"    let l:header = "/*****************************" . l:left_padding . a:title . l:right_padding . "*****************************/"
+"    call append('.', '/'.l:divider.'/')
+"    call append('.', l:header)
+"    call append('.', '/'.l:divider.'/')
+"endfunction
+"
+"command! -nargs=1 Header call InsertCenteredHeader(<q-args>)
