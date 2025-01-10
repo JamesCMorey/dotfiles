@@ -1,16 +1,24 @@
 #!/bin/bash
 
-read -p "This script assumes you are in the dotfiles repo. Press enter to continue... " input
-
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-mkdir $(pwd)/.vim
 mkdir -p ~/.vim/swp
 mkdir -p ~/.vim/backup
 mkdir -p ~/.vim/undodir
 
-ln -s $(pwd)/files/tmux.conf ~/.tmux.conf
-ln -s $(pwd)/files/ctags ~/.ctags
-ln -s $(pwd)/files/zshrc ~/.zshrc
-ln -s $(pwd)/files/vimrc ~/.vimrc
+FILES=("tmux.conf"  "ctags" "zshrc" "vimrc" "gitignore_global" "gitconfig")
+DOTFILES_DIR=$(pwd)
+
+for FILE in "${FILES[@]}"; do
+  TARGET="$HOME/.$FILE"
+  SOURCE="$DOTFILES_DIR/$FILE"
+
+  # Check if the target already exists
+  if [ -e "$TARGET" ]; then
+    echo "Skipping $FILE: $TARGET already exists."
+  else
+    ln -s "$SOURCE" "$TARGET"
+    echo "Created symlink for $FILE."
+  fi
+done

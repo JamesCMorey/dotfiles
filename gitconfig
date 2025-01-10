@@ -1,0 +1,36 @@
+[user]
+    name = James C. Morey
+    email = 
+
+[core]
+    editor = vim
+
+[color]
+    ui = auto
+
+[alias]
+    st = status --short
+    co = checkout
+    br = branch
+    cm = commit
+    amend = commit --amend
+    lg = log --oneline --graph --decorate --all
+    df = diff
+    undo = reset --soft HEAD~1
+    unstage = reset HEAD --
+
+[merge]
+    conflictstyle = diff3
+
+[init]
+    defaultBranch = main
+
+[help]
+    autocorrect = 1
+
+[core]
+    preloadindex = true
+    excludesfile = /home/jcm/.gitignore_global
+
+[gc]
+    auto = 256
