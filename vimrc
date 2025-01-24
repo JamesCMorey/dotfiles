@@ -87,8 +87,10 @@ set colorcolumn=81
 " set spell
 set tabpagemax=20
 
-let mapleader = ' '
+" make vim . go to netrw
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) | execute 'Explore' | endif
 
+let mapleader = ' '
 " Window Navigation
 " requires 'w' to be pressed twice to switch pane
 nnoremap <leader>wg <C-W><C-W>l
