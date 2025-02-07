@@ -7,6 +7,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'vimwiki/vimwiki'
 Plug 'preservim/vim-markdown'
+Plug 'mbbill/undotree'
 
 "Plug 'bling/vim-bufferline'
 "Plug 'chriskempson/base16-vim'

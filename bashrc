@@ -56,11 +56,12 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
+#if [ "$color_prompt" = yes ]; then
+#    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+#else
+#    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+#fi
+PS1="(\[\033[01;34m\]\w\[\033[00m\])> "
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
@@ -114,9 +115,28 @@ if ! shopt -oq posix; then
   fi
 fi
 
-alias cmd="cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug"
-alias cmr="cmake -S . -B build -DCMAKE_BUILD_TYPE=Release"
-alias cmm="cmake --build build"
+
+# CMAKE BASIC
+# cmake make
+alias cmm="cmake -S . -B build"
+
+# cmake make target
+alias cmt="cmake --build build --target"
+
+# cmake run target
+function cmr() {
+    cmt "$@"
+    ./build/"$1"
+}
+
+# CMAKE BUILD OPTIONS
+# cmake make debug
+alias cmmd="cmm -DCMAKE_BUILD_TYPE=Debug"
+# cmake make release
+alias cmmr="cmm -DENABLE_TESTS=OFF -DCMAKE_BUILD_TYPE=Release"
+
+# cmake run tests
+alias cmrt="cmm -DENABLE_TESTS=ON && cmake --build build --target tests"
 
 #source ~/.bash_profile
 
