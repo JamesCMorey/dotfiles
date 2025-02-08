@@ -1,14 +1,14 @@
 call plug#begin()
 
-Plug 'vim/colorschemes'
 Plug 'bfrg/vim-cpp-modern'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'vimwiki/vimwiki'
-Plug 'preservim/vim-markdown'
 Plug 'mbbill/undotree'
 
+"Plug 'vim/colorschemes'
+"Plug 'preservim/vim-markdown'
+"Plug 'vimwiki/vimwiki'
 "Plug 'bling/vim-bufferline'
 "Plug 'chriskempson/base16-vim'
 "Plug 'aklt/plantuml-syntax'
@@ -57,7 +57,7 @@ if !exists('g:syntax_on')
 		syntax enable
 endif
 
-colorscheme sorbet
+" colorscheme sorbet
 "set t_Co=256
 "let base16colorspace=256
 "colorscheme base16-espresso
