@@ -117,6 +117,9 @@ fi
 
 
 # CMAKE BASIC
+#cmake clean
+alias cmc="cd build && make clean && cd .."
+
 # cmake make
 alias cmm="cmake -S . -B build"
 
@@ -132,11 +135,12 @@ function cmr() {
 # CMAKE BUILD OPTIONS
 # cmake make debug
 alias cmmd="cmm -DCMAKE_BUILD_TYPE=Debug"
+
 # cmake make release
 alias cmmr="cmm -DENABLE_TESTS=OFF -DCMAKE_BUILD_TYPE=Release"
 
 # cmake run tests
-alias cmrt="cmm -DENABLE_TESTS=ON && cmake --build build --target tests"
+alias cmrt="cmm -DENABLE_TESTS=ON && cmt tests"
 
 #source ~/.bash_profile
 
