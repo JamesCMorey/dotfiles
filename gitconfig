@@ -30,7 +30,7 @@
 
 [core]
     preloadindex = true
-    excludesfile = /home/jcm/.gitignore_global
+    excludesfile = ~/.gitignore_global
 
 [gc]
     auto = 256
