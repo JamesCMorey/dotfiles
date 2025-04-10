@@ -1,9 +1,11 @@
 [user]
     name = James C. Morey
-    email = 
+    email =
 
 [core]
     editor = vim
+    preloadindex = true
+    excludesfile = ~/.gitignore_global
 
 [color]
     ui = auto
@@ -27,10 +29,6 @@
 
 [help]
     autocorrect = 1
-
-[core]
-    preloadindex = true
-    excludesfile = ~/.gitignore_global
 
 [gc]
     auto = 256
