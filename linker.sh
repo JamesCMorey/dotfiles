@@ -26,5 +26,6 @@ for FILE in "${FILES[@]}"; do
   fi
 done
 
-ln -s "$DOTFILES_DIR/kitty.conf" "~/.config/kitty"
-ln -s "$DOTFILES_DIR/nvim" "~/.config/nvim"
+mkdir -p ~/.config
+ln -s "$DOTFILES_DIR/kitty.conf" ~/.config/kitty.conf
+ln -s "$DOTFILES_DIR/nvim" ~/.config/nvim
