@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 echo "Installing tpm and vim-plug"
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
@@ -29,3 +27,4 @@ for FILE in "${FILES[@]}"; do
 done
 
 ln -s "$DOTFILES_DIR/kitty.conf" "~/.config/kitty"
+ln -s "$DOTFILES_DIR/nvim" "~/.config/nvim"
