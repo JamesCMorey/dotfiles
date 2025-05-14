@@ -5,48 +5,8 @@ Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'mbbill/undotree'
-Plug 'vimwiki/vimwiki'
 
-"Plug 'preservim/vim-markdown'
-"Plug 'vim/colorschemes'
-"Plug 'bling/vim-bufferline'
-"Plug 'chriskempson/base16-vim'
-"Plug 'aklt/plantuml-syntax'
-"Plug 'tyru/open-browser.vim'
-"Plug 'weirongxu/plantuml-previewer.vim'
-"Plug 'mattn/calendar-vim'
-"Plug 'manuelmayr/C0Vim'
-"Plug 'https://github.com/ryanoasis/vim-devicons'
-"Plug 'lervag/vimtex'
-"Plug 'lervag/vimtex', { 'tag': 'v2.15' }
-"
 call plug#end()
-
-" VIMWIKI START
-"let g:vimwiki_list = [{ 'path': '~/files', 'syntax': 'markdown', 'ext': '.md', 'diary_rel_path': 'Log'}]
-let wiki = {}
-let wiki.path = '~/files'
-let wiki.syntax = 'markdown'
-let wiki.ext = '.md'
-let wiki.diary_rel_path = 'Log'
-let g:vimwiki_markdown_link_ext = 1
-
-" Code block syntax highlighting
-let g:vimwiki_folding = 'expr'
-let g:vimwiki_syntax = 'default'
-let g:vimwiki_code_highlight = 1
-
-" Make it so that the syntax highlighting is triggered immediatly and the file
-" doesn't need to be reopened or have filetype=vimwiki set to refresh syntax
-autocmd BufRead,BufNewFile *.md set filetype=vimwiki
-autocmd BufWritePost,BufReadPost *.md set filetype=vimwiki
-
-let g:vimwiki_list = [wiki]
-
-au BufNewFile ~/files/*.md :silent 0r !~/.vim/bin/basic-template.py '%'
-au BufNewFile ~/files/Log/*.md :silent 0r !~/.vim/bin/log-template.py '%'
-
-" VIMWIKI END
 
 set backspace=indent,eol,start
 "let g:NERDTreeDirArrowExpandable="+"
@@ -57,13 +17,6 @@ if !exists('g:syntax_on')
 		syntax enable
 endif
 
-" colorscheme sorbet
-"set t_Co=256
-"let base16colorspace=256
-"colorscheme base16-espresso
-"set termguicolors
-"highlight Normal ctermbg=NONE
-"highlight nonText ctermbg=NONE
 set cursorline
 set nu rnu
 set ruler
@@ -80,8 +33,10 @@ set termencoding=utf-8
 "autocmd Filetype tex setl updatetime=1
 autocmd FileType * set nocindent
 hi! link TODO Boolean
+set softtabstop=4
 set smartindent
-set sw=4 ts=4 "expandtab
+set smarttab
+set sw=4 ts=4 expandtab
 
 set textwidth=80
 set colorcolumn=81
@@ -158,17 +113,3 @@ function! InsertDynamicHeader(title)
 endfunction
 
 command! -nargs=1 Header call InsertDynamicHeader(<q-args>)
-
-"function! InsertCenteredHeader(title)
-"    let l:divider = repeat("*", 78)
-"    let l:title_length = len(a:title)
-"    let l:total_padding = 78 - l:title_length - 29*2
-"    let l:left_padding = repeat(" ", l:total_padding / 2)
-"    let l:right_padding = repeat(" ", l:total_padding - len(l:left_padding))
-"    let l:header = "/*****************************" . l:left_padding . a:title . l:right_padding . "*****************************/"
-"    call append('.', '/'.l:divider.'/')
-"    call append('.', l:header)
-"    call append('.', '/'.l:divider.'/')
-"endfunction
-"
-"command! -nargs=1 Header call InsertCenteredHeader(<q-args>)
