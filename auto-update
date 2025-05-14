@@ -1,2 +1,0 @@
-#!/bin/bash
-/usr/bin/sudo /usr/bin/apt update && /usr/bin/sudo /usr/bin/apt upgrade -y

@@ -5,10 +5,10 @@ Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'mbbill/undotree'
+Plug 'vimwiki/vimwiki'
 
-"Plug 'vim/colorschemes'
 "Plug 'preservim/vim-markdown'
-"Plug 'vimwiki/vimwiki'
+"Plug 'vim/colorschemes'
 "Plug 'bling/vim-bufferline'
 "Plug 'chriskempson/base16-vim'
 "Plug 'aklt/plantuml-syntax'
@@ -81,7 +81,7 @@ set termencoding=utf-8
 autocmd FileType * set nocindent
 hi! link TODO Boolean
 set smartindent
-set sw=4 ts=4 expandtab
+set sw=4 ts=4 "expandtab
 
 set textwidth=80
 set colorcolumn=81
