@@ -8,17 +8,19 @@ vim-plug() {
 
 docs() {
     echo "Installing manpages"
-    sudo apt install manpages manpages-dev manpages-posix manpages-posix-dev \
+    sudo apt install -y manpages manpages-dev manpages-posix manpages-posix-dev \
 		bash-doc gdb-doc glibc-doc
 }
 
 dev-tools() {
     echo "Installing dev-tools"
-    sudo apt install gcc gdb valgrind make vim tmux git build-essential
+    sudo apt install -y gcc gdb valgrind make vim tmux git build-essential
 }
 
 dotfiles() {
 	echo "stowing dotfiles"
+    sudo apt install -y stow
+    mv ~/.bashrc ~/.bashrc_old
 	stow --dotfiles -S default/ git/
 }
 
