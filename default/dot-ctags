@@ -1,4 +1,8 @@
 --recurse=yes
+--languages=C,C++
+--fields=+iaSlKz
+--extras=+q
+--output-format=e-ctags
 --exclude=.git
 --exclude=BUILD
 --exclude=.svn

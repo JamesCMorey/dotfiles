@@ -76,3 +76,5 @@ desktop.ini
 *.lock
 
 todo.md
+.cache
+test.c

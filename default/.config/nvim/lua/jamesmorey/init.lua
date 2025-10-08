@@ -1,0 +1,5 @@
+require("jamesmorey.remap")
+require("jamesmorey.visual")
+require("jamesmorey.lazy")
+require("jamesmorey.autocmd")
+require("jamesmorey.options")

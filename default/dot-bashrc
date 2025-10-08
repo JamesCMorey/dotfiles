@@ -148,6 +148,7 @@ alias ls="ls --color"
 alias la="ls -a --color"
 alias l="ls -la --color"
 alias :q="exit"
+alias vim=nvim
 
 # colored man pages
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
@@ -163,3 +164,5 @@ export GPG_TTY=$(tty) # fix bug with gpg signature for commits
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 export PATH="$PATH:~/.local/bin"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

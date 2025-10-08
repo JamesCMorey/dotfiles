@@ -1,5 +1,8 @@
 call plug#begin()
 
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+
 Plug 'bfrg/vim-cpp-modern'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -7,6 +10,29 @@ Plug 'junegunn/fzf.vim'
 Plug 'mbbill/undotree'
 
 call plug#end()
+
+if executable('clangd')
+    function! s:disable_diagnostics(...) abort
+        return []
+    endfunction
+
+    let g:lsp_diagnostics_enabled = 0
+    let g:lsp_signs_enabled = 0
+    let g:lsp_virtual_text_enabled = 0
+    let g:lsp_document_highlight_enabled = 0
+
+    augroup lsp_clangd
+        autocmd!
+        autocmd User lsp_setup call lsp#register_server({
+                    \ 'name': 'clangd',
+                    \ 'cmd': {server_info->['clangd']},
+                    \ 'whitelist': ['c', 'cpp'],
+                    \ })
+        autocmd FileType c setlocal omnifunc=lsp#complete
+        autocmd FileType cpp setlocal omnifunc=lsp#complete
+    augroup end
+endif
+
 
 set backspace=indent,eol,start
 "let g:NERDTreeDirArrowExpandable="+"
@@ -50,6 +76,11 @@ let mapleader = ' '
 " Window Navigation
 " requires 'w' to be pressed twice to switch pane
 nnoremap <leader>wg <C-W><C-W>l
+
+" LSP
+nnoremap gd :LspDefinition<CR>
+nnoremap gD :LspDeclaration<CR>
+nnoremap gb <C-t>
 
 " NERDTree
 nnoremap <leader>g <C-W>w
