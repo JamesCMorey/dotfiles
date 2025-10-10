@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from subprocess import run
 import os
+from pathlib import Path
 
 
 packages = {
@@ -19,6 +20,15 @@ def main():
     setup_vim()
     install_neovim()
     install_dotfiles()
+
+    valid_inputs = ['y', 'n', '']
+    user = input("Install authorized key for user (y/N)")
+    while user.lower() not in valid_inputs:
+        user = input("Install authorized key for user (y/N)")
+
+    if user == 'y':
+        ssh_key = input("Enter key: ")
+
 
 
 def install_packages():
@@ -70,6 +80,42 @@ def install_neovim():
     run(["make", "CMAKE_BUILD_TYPE=RelWithDebInfo"], cwd=repo_dir, check=True)
     # Install
     run(["sudo", "make", "install"], cwd=repo_dir, check=True)
+
+
+def setup_authorized_key():
+    valid_inputs = ['y', 'n', '']
+    user = input("Install authorized key for user (y/N): ").strip().lower()
+
+    # Re-prompt until valid
+    while user not in valid_inputs:
+        user = input("Install authorized key for user (y/N): ").strip().lower()
+
+    # Default is "no"
+    if user == '' or user == 'n':
+        print("Skipping authorized key installation.")
+        return
+
+    ssh_key = input("Enter key: ").strip()
+
+    if not ssh_key:
+        print("No key entered. Skipping.")
+        return
+
+    # Expand ~/.ssh and authorized_keys
+    ssh_dir = Path.home() / ".ssh"
+    auth_keys = ssh_dir / "authorized_keys"
+
+    # Ensure directory exists and has correct permissions
+    ssh_dir.mkdir(mode=0o700, exist_ok=True)
+
+    # Append key only if not already present
+    if auth_keys.exists() and ssh_key in auth_keys.read_text():
+        print("Key already exists in authorized_keys.")
+    else:
+        with auth_keys.open("a") as f:
+            f.write(ssh_key + "\n")
+        os.chmod(auth_keys, 0o600)
+        print(f"Added key to {auth_keys}")
 
 
 if __name__ == "__main__":
