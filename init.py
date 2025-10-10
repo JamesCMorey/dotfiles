@@ -17,18 +17,13 @@ packages = {
 
 def main():
     install_packages()
-    setup_vim()
-    install_neovim()
     install_dotfiles()
 
-    valid_inputs = ['y', 'n', '']
-    user = input("Install authorized key for user (y/N)")
-    while user.lower() not in valid_inputs:
-        user = input("Install authorized key for user (y/N)")
+    setup_vim()
+    install_neovim()
 
-    if user == 'y':
-        ssh_key = input("Enter key: ")
-
+    setup_code_dir()
+    setup_authorized_key()
 
 
 def install_packages():
@@ -82,8 +77,56 @@ def install_neovim():
     run(["sudo", "make", "install"], cwd=repo_dir, check=True)
 
 
+def setup_gh_key():
+    print("Please install your GitHub private key and enter its location.")
+    key_path = input("Location of GitHub private key: ").strip()
+    key_path = os.path.expanduser(key_path)
+
+    ssh_dir = Path.home() / ".ssh"
+    ssh_dir.mkdir(mode=0o700, exist_ok=True)
+
+    ssh_config = ssh_dir / "config"
+    conf = (
+        "\nHost github.com\n"
+        "\tHostname github.com\n"
+        "\tUser git\n"
+        f"\tIdentityFile {key_path}\n"
+    )
+
+    with ssh_config.open("a") as f:
+        f.write(conf)
+
+    os.chmod(ssh_config, 0o600)
+    print(f"Added GitHub key configuration to {ssh_config}")
+
+
+def setup_code_dir():
+    valid_inputs = ["y", "n", ""]
+    user = input("Setup code dir (y/N): ").strip().lower()
+
+    while user not in valid_inputs:
+        user = input("Setup code dir (y/N): ").strip().lower()
+
+    if user in ["", "n"]:
+        print("Skipping code directory setup.")
+        return
+
+    gh = input("GitHub SSH key already configured (y/N): ").strip().lower()
+    if gh in ["", "n"]:
+        setup_gh_key()
+
+    base = Path.home() / "code"
+    for d in ["", "0-readings", "1-testing"]:
+        (base / d).mkdir(parents=True, exist_ok=True)
+
+    run(
+        ["git", "clone", "git@github.com:JamesCMorey/snippets.git", "2-snippets"],
+        cwd=base,
+        check=True,
+    )
+
 def setup_authorized_key():
-    valid_inputs = ['y', 'n', '']
+    valid_inputs = ["y", "n", ""]
     user = input("Install authorized key for user (y/N): ").strip().lower()
 
     # Re-prompt until valid
@@ -91,7 +134,7 @@ def setup_authorized_key():
         user = input("Install authorized key for user (y/N): ").strip().lower()
 
     # Default is "no"
-    if user == '' or user == 'n':
+    if user == "" or user == "n":
         print("Skipping authorized key installation.")
         return
 
