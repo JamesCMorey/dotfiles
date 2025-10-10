@@ -8,20 +8,9 @@
 *.dll
 *.exe
 
-# Precompiled headers
-*.gch
-*.pch
-
 # Debug files
 *.dSYM/
 *.stackdump
-
-# Generated files (e.g., by autoconf)
-configure
-config.log
-config.status
-config.h
-autom4te.cache/
 
 # Build directories (e.g., CMake, Make)
 build/
@@ -29,11 +18,6 @@ CMakeFiles/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
-
-# Coverage files
-*.gcno
-*.gcda
-*.gcov
 
 # Logs and debug output
 *.log
@@ -45,25 +29,7 @@ cmake_install.cmake
 *.swo
 *.tmp
 *.bak
-
-# IDE-specific files
-# CLion/JetBrains
-.idea/
-cmake-build-debug/
-cmake-build-release/
-cmake-build-*
-
-# VSCode
-.vscode/
-
-# Eclipse
-.project
-.cproject
-
-# Xcode
-*.xcworkspace/
-*.xcuserdata/
-*.xcodeproj/
+__pycache__
 
 # macOS-specific
 .DS_Store
