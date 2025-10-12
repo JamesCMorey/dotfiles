@@ -59,3 +59,18 @@ end, { desc = "Format buffer with LSP (clangd/clang-format)" })
 -- Commenting
 vim.keymap.set("n", "<leader>/", "gcc", { remap = true })
 vim.keymap.set("v", "<leader>/", "gc", { remap = true })
+
+-- Markdown link following behavior
+vim.keymap.set("n", "<leader>l", "/\\[[^]]*\\](\\([^)]*\\))<CR>zz<cmd>:nohlsearch<CR>", { silent = true, desc = "Next markdown link" })
+vim.keymap.set("n", "<leader>h", "?\\[[^]]*\\](\\([^)]*\\))<CR>zz<cmd>:nohlsearch<CR>", { silent = true, desc = "Previous markdown link" })
+
+-- Load the module and apply only to md files
+local nav = require("jamesmorey.md-links")
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.keymap.set("n", "<CR>", nav.follow_link, { buffer = true, silent = true, desc = "Follow markdown link" })
+    vim.keymap.set("n", "<BS>", nav.go_back, { buffer = true, silent = true, desc = "Go back in link stack" })
+  end,
+})
+
