@@ -145,8 +145,8 @@ alias cmrt="cmm -DENABLE_TESTS=ON && cmt tests"
 #source ~/.bash_profile
 
 alias ls="ls --color"
-alias la="ls -a --color"
-alias l="ls -la --color"
+alias la="ls -a"
+alias l="ls -la"
 alias :q="exit"
 alias vim=nvim
 

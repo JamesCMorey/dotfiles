@@ -9,5 +9,7 @@ vim.opt.expandtab = false
 vim.opt.smartindent = true
 vim.opt.autoindent = true
 
+vim.opt.signcolumn = "yes"
+
 -- yank to clipboard
 vim.opt.clipboard = "unnamedplus"
