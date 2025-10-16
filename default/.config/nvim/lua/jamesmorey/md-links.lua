@@ -18,7 +18,6 @@ local function find_link_in_line()
   return link
 end
 
--- Follow the markdown link on the current line
 function M.follow_link()
   local link = find_link_in_line()
   if not link then
@@ -26,16 +25,22 @@ function M.follow_link()
     return
   end
 
-  -- Resolve relative path to absolute path
-  local current_dir = vim.fn.expand("%:p:h")
-  local path = vim.fn.fnamemodify(current_dir .. "/" .. link, ":p")
+  -- Get the real file path (resolves symlinks)
+  local current_file = vim.fn.resolve(vim.fn.expand("%:p"))
+  local base_dir = vim.fn.fnamemodify(current_file, ":h")
 
-  -- If file doesn't exist, create it (only for .md)
-  if vim.fn.filereadable(path) == 0 then
-    local ext = vim.fn.fnamemodify(path, ":e")
+  -- Build an absolute path to the link target based on file location
+  local target = vim.fn.fnamemodify(base_dir .. "/" .. link, ":p")
+
+  -- Normalize: collapse ../ and ./ sequences
+  target = vim.fn.resolve(target)
+
+  -- Create file if missing (only markdown)
+  if vim.fn.filereadable(target) == 0 then
+    local ext = vim.fn.fnamemodify(target, ":e")
     if ext == "md" or ext == "" then
-      vim.fn.writefile({}, path)  -- create empty file
-      vim.notify("Created new file: " .. path, vim.log.levels.INFO)
+      vim.fn.writefile({}, target)
+      vim.notify("Created new file: " .. target, vim.log.levels.INFO)
     else
       vim.notify("File not found and not markdown: " .. link, vim.log.levels.ERROR)
       return
@@ -43,8 +48,9 @@ function M.follow_link()
   end
 
   table.insert(link_stack, vim.api.nvim_buf_get_name(0))
-  vim.cmd("edit " .. vim.fn.fnameescape(path))
+  vim.cmd.edit(vim.fn.fnameescape(target))
 end
+
 
 -- Go back up the stack
 function M.go_back()

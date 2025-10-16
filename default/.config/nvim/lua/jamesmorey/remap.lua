@@ -45,6 +45,7 @@ vim.keymap.set("n", "<leader>r", "<cmd>:NvimTreeFocus<CR>")
 
 -- Misc
 vim.keymap.set("n", "<esc><esc>", "<cmd>:nohlsearch<CR>")
+vim.keymap.set("i", "\\l", "λ")
 
 ---[[ CODE ]]---
 -- LSP
