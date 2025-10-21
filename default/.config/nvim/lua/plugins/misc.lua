@@ -1,21 +1,30 @@
-
 return {
 	-- Visual
-
 	{ "marko-cerovac/material.nvim" },
 	{ "nvim-tree/nvim-web-devicons", opts = {} },
+
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter.configs").setup {
-				ensure_installed = { "c", "cpp", "lua", "python", "bash", "csv", "awk"},
+				ensure_installed = { "c", "cpp", "lua", "python", "bash", "csv", "awk" },
 				highlight = { enable = true },
+				indent = {
+					enable = true,
+					disable = {},  -- make sure Python is included
+				},
 			}
+
+			-- Make absolutely sure the old vim indent script never loads
+			vim.g.did_indent_python = 1
 		end,
 	},
+
+
 	{
-		'akinsho/bufferline.nvim', version = "*",
+		'akinsho/bufferline.nvim',
+		version = "*",
 		dependencies = 'nvim-tree/nvim-web-devicons',
 		config = function()
 			require("bufferline").setup({})
@@ -28,7 +37,7 @@ return {
 		version = false,
 		config = function()
 			require("mini.files").setup({
-				options = {use_as_default_explorer = false },
+				options = { use_as_default_explorer = false },
 			})
 		end
 	},
@@ -46,10 +55,8 @@ return {
 
 	{
 		'MeanderingProgrammer/render-markdown.nvim',
-		dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
-		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-		---@module 'render-markdown'
-		---@type render.md.UserConfig
+		dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },
 		opts = {},
-	}
+	},
 }
+
