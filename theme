@@ -1,0 +1,7 @@
+FONT: Source Code Pro Medium
+FONT SIZE: 14
+
+COLORSCHEME
+tmux-bg: color60
+nvim: kanso zen
+XFCE Term (gogh): Spacegray

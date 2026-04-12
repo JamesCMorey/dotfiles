@@ -1,0 +1,46 @@
+# Compiled object files, shared libraries, and executables
+*.o
+*.so
+*.so.*
+*.out
+*.a
+*.dylib
+*.dll
+*.exe
+
+# Debug files
+*.dSYM/
+*.stackdump
+
+# Build directories (e.g., CMake, Make)
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+# Logs and debug output
+*.log
+*.tmp
+
+# Temporary files and swap files
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+__pycache__
+
+# macOS-specific
+.DS_Store
+
+# Windows-specific
+Thumbs.db
+desktop.ini
+
+# Linux-specific
+*.lock
+
+todo.md
+.cache
+test.c

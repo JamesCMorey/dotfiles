@@ -1,0 +1,173 @@
+call plug#begin()
+
+Plug 'yegappan/lsp'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'bfrg/vim-cpp-modern'
+Plug 'ryanoasis/vim-devicons'
+Plug 'bling/vim-bufferline'
+Plug 'mhinz/vim-signify'
+
+Plug 'preservim/nerdtree'
+Plug 'mbbill/undotree'
+
+call plug#end()
+
+" sudo zypper in gopls clang21 python313-python-lsp-server
+
+" ------------------------
+"  Plugin Configuration
+" ------------------------
+
+" Gitsigns
+autocmd VimEnter * highlight SignifySignAdd    guifg=DarkGreen  ctermfg=DarkGreen
+autocmd VimEnter * highlight SignifySignChange guifg=Yellow ctermfg=Yellow
+autocmd VimEnter * highlight SignifySignDelete guifg=Red    ctermfg=Red
+let g:signify_update_on_text_changed = 1
+
+let g:signify#debounce_timer = 0
+function! s:SignifyDebouncedRefresh() abort
+    if g:signify#debounce_timer != 0
+        call timer_stop(g:signify#debounce_timer)
+    endif
+    let g:signify#debounce_timer = timer_start(300, { -> execute('SignifyRefresh') })
+endfunction
+autocmd TextChanged,TextChangedI * call <SID>SignifyDebouncedRefresh()
+
+
+" LSP
+packadd lsp
+let lspOpts = #{autoHighlightDiags: v:true,
+            \   showDiagWithVirtualText: v:true,
+            \   diagVirtualTextAlign: 'after',
+            \ }
+autocmd User LspSetup call LspOptionsSet(lspOpts)
+
+let clangd = [#{
+            \	  name: 'clang',
+            \	  filetype: ['c', 'cpp'],
+            \	  path: '/bin/clangd',
+            \	  args: ['--background-index']
+            \ }]
+autocmd User LspSetup call LspAddServer(clangd)
+
+let gopls = [#{
+            \    name: 'golang',
+            \    filetype: ['go', 'gomod'],
+            \    path: '/usr/bin/gopls',
+            \    args: ['serve'],
+            \    syncInit: v:true
+            \  }]
+autocmd User LspSetup call LspAddServer(gopls)
+
+let pylsp = [#{
+            \    name: 'python',
+            \    filetype: ['python'],
+            \    path: '/usr/bin/pylsp',
+            \    args: [],
+            \    syncInit: v:true
+            \  }]
+autocmd User LspSetup call LspAddServer(pylsp)
+
+" ------------------------
+" VIM Defaults
+" ------------------------
+set backspace=indent,eol,start
+set encoding=UTF-8
+
+if !exists('g:syntax_on')
+    syntax enable
+endif
+
+set enc=utf-8
+set fenc=utf-8
+set termencoding=utf-8
+
+set nocompatible
+set clipboard=unnamedplus
+
+set cursorline
+set nu rnu
+set ruler
+set incsearch
+set nowrap
+let g:markdown_fenced_languages = ['python', 'c', 'bash']
+set signcolumn=yes
+highlight SignColumn ctermbg=none
+colorscheme habamax
+
+set softtabstop=4
+set smartindent
+set smarttab
+set sw=4 ts=4 expandtab
+
+set textwidth=80
+set colorcolumn=81
+set tabpagemax=20
+
+" make vim . go to netrw
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) | execute 'Explore' | endif
+
+" ------------------------
+"  Remaps
+" ------------------------
+
+let mapleader = ' '
+
+" Misc Remaps
+inoremap kj <ESC>
+nnoremap <silent> <ESC><ESC> :nohl<CR>
+inoremap {<CR> {<CR>}<esc>O
+nnoremap <leader>sr :source ~/.vimrc<CR>
+nnoremap <leader>e :Explore<CR>
+
+" Window Navigation
+nnoremap <leader>wl <C-W>l
+nnoremap <leader>wh <C-W>h
+nnoremap <leader>wj <C-W>j
+nnoremap <leader>wk <C-W>k
+
+" Buffer Navigation
+nnoremap <leader>b <CMD>w<CR>:b
+nnoremap <leader>n <CMD>bn!<CR>
+nnoremap <leader>p <CMD>bp!<CR>
+nnoremap <leader>x :let b=bufnr() \| bnext \| execute 'bd' b<CR>
+nnoremap <TAB> <CMD>bn!<CR>
+nnoremap <S-TAB> <CMD>bp!<CR>
+" close all buffers except the current one
+nnoremap <leader>bc :%bd\|e#\|bd#<CR>
+
+" LSP
+nnoremap gd <CMD>LspGotoDefinition<CR>
+nnoremap gD <CMD>LspGotoDeclaration<CR>
+nnoremap gi <CMD>LspGotoImpl<CR>
+nnoremap gb <C-t>
+nnoremap <leader>f <CMD>LspFormat<CR>
+
+" NERDTree
+nnoremap <leader>t <CMD>NERDTreeToggle<CR>
+
+" Undotree
+nnoremap <leader>u <CMD>UndotreeToggle<CR>
+
+" fuzzy finder
+nnoremap <leader>sb :w<CR>:Buffers<CR>
+nnoremap <leader>sf :w<CR>:Files<CR>
+nnoremap <leader>sg :w<CR>:RG<CR>
+
+" Safeties
+set backup
+set backupdir=~/.vim/backups//
+
+set undofile
+set undodir=~/.vim/undodir//
+
+set directory=~/.vim/swapdir//
+
+" ------------------------
+"  Autocmds
+" ------------------------
+
+" delete trailing white space upon write
+autocmd BufWritePre * %s/\s\+$//e
