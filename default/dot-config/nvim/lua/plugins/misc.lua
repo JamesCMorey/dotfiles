@@ -11,7 +11,13 @@ return {
 			require("nvim-treesitter").setup {}
 
 			local langs = { "c", "cpp", "lua", "python", "bash", "csv", "awk", "go", "scheme" }
-			require("nvim-treesitter").install(langs)
+
+			-- Block during headless so the Docker build waits for parsers to compile
+			if #vim.api.nvim_list_uis() == 0 then
+				require("nvim-treesitter").install(langs):wait(300000)
+			else
+				require("nvim-treesitter").install(langs)
+			end
 
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = langs,
