@@ -5,18 +5,22 @@ return {
 
 	{
 		"nvim-treesitter/nvim-treesitter",
+		lazy = false,
 		build = ":TSUpdate",
 		config = function()
-			require("nvim-treesitter.configs").setup {
-				ensure_installed = { "c", "cpp", "lua", "python", "bash", "csv", "awk", "go", "scheme" },
-				highlight = { enable = true },
-				indent = {
-					enable = true,
-					disable = {}, -- make sure Python is included
-				},
-			}
+			require("nvim-treesitter").setup {}
 
-			-- Make absolutely sure the old vim indent script never loads
+			local langs = { "c", "cpp", "lua", "python", "bash", "csv", "awk", "go", "scheme" }
+			require("nvim-treesitter").install(langs)
+
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = langs,
+				callback = function()
+					vim.treesitter.start()
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end,
+			})
+
 			vim.g.did_indent_python = 1
 		end,
 	},
