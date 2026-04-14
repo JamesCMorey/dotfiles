@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$HOME/dotfiles/docker"
+SERVICE="dev"
+CONTAINER="devbox"
+
+cd "$PROJECT_DIR"
+
+is_running() {
+    docker compose ps --services --filter "status=running" | grep -q "^$SERVICE$"
+}
+
+cmd_start() {
+    if is_running; then
+        echo "Container '$SERVICE' is already running."
+        exit 1
+    fi
+    docker compose up -d "$SERVICE"
+}
+
+cmd_stop() {
+    if is_running; then
+        docker compose down
+    fi
+}
+
+cmd_enter() {
+    is_running || docker compose up -d "$SERVICE"
+    docker exec -it "$CONTAINER" bash
+}
+
+cmd_build() {
+    local mode="${1:-}"
+
+    case "$mode" in
+        --full)
+            # Rebuild everything from scratch, no cache
+            docker compose build --no-cache "$SERVICE"
+            ;;
+        --dotfiles)
+            # Rebuild from the dotfiles stage, keeping base layers cached
+            docker build --target dotfiles --no-cache-filter dotfiles -t "${COMPOSE_PROJECT_NAME:-dev}-$SERVICE" "$PROJECT_DIR"
+            ;;
+        *)
+            # Normal incremental build (docker layer cache decides what's stale)
+            docker compose build "$SERVICE"
+            ;;
+    esac
+}
+
+action="$(basename "$0")"
+case "$action" in
+    ,start)   cmd_start ;;
+    ,stop)    cmd_stop ;;
+    ,enter)   cmd_enter ;;
+    ,build)   cmd_build "${1:-}" ;;
+    ,devbox)
+        # Called directly — require a subcommand
+        subcmd="${1:-help}"
+        shift 2>/dev/null || true
+        case "$subcmd" in
+            start)  cmd_start ;;
+            stop)   cmd_stop ;;
+            enter)  cmd_enter ;;
+            build)  cmd_build "${1:-}" ;;
+            *)
+                echo "Usage: ,devbox <start|stop|enter|build [--full|--dotfiles]>"
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Unknown command: $action"
+        exit 1
+        ;;
+esac
