@@ -1,0 +1,368 @@
+# ~/.zshrc — interactive shell configuration.
+#
+# Organized in labeled sections. Everything external is guarded with
+# `command -v` / file-existence checks so this file works on macOS
+# (Homebrew) and openSUSE (zypper) alike, and degrades gracefully when
+# an optional tool is missing. Managed via stow (dotfiles/default).
+
+# Only run for interactive shells (defensive — .zshrc normally is).
+[[ $- != *i* ]] && return
+
+# ── Platform detection ─────────────────────────────────────────────
+case "$OSTYPE" in
+  darwin*) IS_MAC=1 ;;
+  linux*)  IS_LINUX=1 ;;
+esac
+
+# Homebrew prefix (used to locate plugins). Prefer the value exported by
+# `brew shellenv` in ~/.zprofile; fall back to a one-time lookup.
+if [[ -z ${HOMEBREW_PREFIX:-} ]] && command -v brew >/dev/null 2>&1; then
+  export HOMEBREW_PREFIX="$(brew --prefix)"
+fi
+BREW_PREFIX="${HOMEBREW_PREFIX:-}"
+
+# ── History ────────────────────────────────────────────────────────
+HISTFILE="$XDG_STATE_HOME/zsh/history"
+HISTSIZE=50000
+SAVEHIST=50000
+mkdir -p "${HISTFILE:h}"
+
+setopt EXTENDED_HISTORY       # record timestamp and duration per entry
+setopt SHARE_HISTORY          # share history across running shells
+setopt HIST_IGNORE_DUPS       # don't record a line identical to the last
+setopt HIST_IGNORE_ALL_DUPS   # drop older duplicate when a line is re-run
+setopt HIST_IGNORE_SPACE      # a leading space keeps a command out of history
+setopt HIST_REDUCE_BLANKS     # tidy surplus whitespace
+setopt HIST_VERIFY            # expand !! etc. onto the line, don't run blind
+setopt HIST_FIND_NO_DUPS      # skip duplicates while searching
+
+# ── Shell options ──────────────────────────────────────────────────
+setopt AUTO_CD                # `dir` on its own means `cd dir`
+setopt AUTO_PUSHD             # cd pushes the old dir onto the stack
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+setopt CDABLE_VARS
+setopt EXTENDED_GLOB          # #, ~ and ^ in globs (also enables (#q...) )
+setopt NUMERIC_GLOB_SORT      # sort globbed numbers numerically
+setopt INTERACTIVE_COMMENTS   # allow `# comments` at the prompt
+setopt NO_BEEP
+setopt NO_FLOW_CONTROL        # free up ^Q / ^S
+setopt PROMPT_SUBST          # allow substitutions in the prompt
+setopt LONG_LIST_JOBS
+unsetopt CORRECT_ALL          # no aggressive autocorrect
+
+# ── Completion ─────────────────────────────────────────────────────
+# Sensible default colors (eza and completion menus both read LS_COLORS).
+if command -v dircolors >/dev/null 2>&1; then
+  eval "$(dircolors -b 2>/dev/null)"
+fi
+export LS_COLORS="${LS_COLORS:-di=34:ln=36:so=35:pi=33:ex=32:bd=33;01:cd=33;01:su=31;01:sg=31;01:tw=34;01:ow=34;01}"
+
+# Extra completion definitions (brew zsh-completions / system site-functions).
+[[ -n $BREW_PREFIX && -d "$BREW_PREFIX/share/zsh-completions" ]] && \
+  fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
+[[ -n $BREW_PREFIX && -d "$BREW_PREFIX/share/zsh/site-functions" ]] && \
+  fpath=("$BREW_PREFIX/share/zsh/site-functions" $fpath)
+
+autoload -Uz compinit
+_zcompdump="$XDG_CACHE_HOME/zsh/zcompdump"
+mkdir -p "${_zcompdump:h}"
+# Rebuild the dump (with the slow security check) at most once a day.
+# `-i` ignores insecure dirs silently instead of prompting — so a stray
+# group-writable Homebrew dir can never hang a new terminal on a [y/n] prompt.
+if [[ -f "$_zcompdump" && -n ${_zcompdump}(#qNmh-24) ]]; then
+  compinit -C -d "$_zcompdump"
+else
+  compinit -i -d "$_zcompdump"
+fi
+unset _zcompdump
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*:warnings'     format '%F{red}-- no matches --%f'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+
+# ── Keybindings: vi mode ───────────────────────────────────────────
+bindkey -v
+export KEYTIMEOUT=1                       # near-instant ESC → normal mode
+WORDCHARS='*?_-.[]~&;!#$%^(){}<>'         # treat / as a word boundary
+
+# Keep useful emacs-style edits available in vi *insert* mode.
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
+bindkey -M viins '^K' kill-line
+bindkey -M viins '^U' backward-kill-line
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^Y' yank
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+
+# `v` in normal mode edits the current command in $EDITOR.
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd 'v' edit-command-line
+
+# Mode-aware cursor (block in normal, beam in insert) + repaint the
+# prompt so the vi-mode indicator updates immediately.
+_vi_sym='❯'
+function zle-keymap-select {
+  case $KEYMAP in
+    vicmd)      _vi_sym='❮'; print -n '\e[2 q' ;;
+    main|viins) _vi_sym='❯'; print -n '\e[6 q' ;;
+  esac
+  zle reset-prompt
+}
+function zle-line-init { _vi_sym='❯'; print -n '\e[6 q' }
+zle -N zle-keymap-select
+zle -N zle-line-init
+
+# ── Prompt (handcrafted, built on zsh's own vcs_info) ──────────────
+zmodload zsh/datetime 2>/dev/null
+autoload -Uz vcs_info add-zsh-hook
+
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr   '%F{green}●%f'
+zstyle ':vcs_info:git:*' unstagedstr '%F{yellow}●%f'
+zstyle ':vcs_info:git:*' formats       ' %F{magenta}%b%f%u%c%m'
+zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b%f|%F{red}%a%f%u%c%m'
+
+# Append ahead/behind-upstream markers to the git segment.
+zstyle ':vcs_info:git*+set-message:*' hooks git-aheadbehind
+function +vi-git-aheadbehind {
+  local ahead behind; local -a markers
+  ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
+  behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
+  (( ${ahead:-0}  )) && markers+=( "%F{cyan}⇡${ahead}%f" )
+  (( ${behind:-0} )) && markers+=( "%F{cyan}⇣${behind}%f" )
+  hook_com[misc]+="${(j::)markers}"
+}
+
+# Time long-running commands for the right prompt.
+function _timer_preexec { _cmd_start=$EPOCHREALTIME }
+function _timer_precmd {
+  _cmd_elapsed=""
+  if [[ -n ${_cmd_start:-} ]]; then
+    local elapsed=$(( EPOCHREALTIME - _cmd_start ))
+    unset _cmd_start
+    (( elapsed >= 3 )) && _cmd_elapsed=$(printf '%.1fs' $elapsed)
+  fi
+}
+add-zsh-hook preexec _timer_preexec
+add-zsh-hook precmd  _timer_precmd
+add-zsh-hook precmd  vcs_info
+
+# Show user@host only when connected over SSH.
+if [[ -n ${SSH_CONNECTION:-} || -n ${SSH_TTY:-} ]]; then
+  _host_prefix='%F{green}%n@%m%f '
+else
+  _host_prefix=''
+fi
+
+# Line 1: (ssh) cwd (truncated when deep) + git.  Line 2: vi-aware caret
+# that turns red after a failed command.
+PROMPT="${_host_prefix}"'%F{blue}%(4~|%-1~/…/%2~|%~)%f${vcs_info_msg_0_}
+%(?.%F{green}.%F{red})${_vi_sym}%f '
+RPROMPT='%F{8}${_cmd_elapsed}%f'
+
+# ── Aliases ────────────────────────────────────────────────────────
+# ls → eza (fall back to colored BSD/GNU ls).
+if command -v eza >/dev/null 2>&1; then
+  alias ls='eza --group-directories-first --icons=auto'
+  alias ll='eza -l  --group-directories-first --icons=auto --git'
+  alias la='eza -a  --group-directories-first --icons=auto'
+  alias lla='eza -la --group-directories-first --icons=auto --git'
+  alias lt='eza --tree --level=2 --icons=auto'
+elif [[ -n $IS_MAC ]]; then
+  alias ls='ls -G'; alias ll='ls -lhG'; alias la='ls -aG'; alias lla='ls -lahG'
+else
+  alias ls='ls --color=auto --group-directories-first'
+  alias ll='ls -lh --color=auto'; alias la='ls -A --color=auto'; alias lla='ls -lah --color=auto'
+fi
+
+# cat → bat.
+if command -v bat >/dev/null 2>&1; then
+  alias cat='bat --paging=never --style=plain'
+  alias catp='bat --paging=never'                 # keep decorations/line numbers
+  export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+  export MANROFFOPT='-c'
+elif command -v batcat >/dev/null 2>&1; then       # Debian/Ubuntu binary name
+  alias cat='batcat --paging=never --style=plain'
+  alias catp='batcat --paging=never'
+  export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
+  export MANROFFOPT='-c'
+fi
+
+
+# Friendlier / safer basics.
+alias mkdir='mkdir -p'
+alias df='df -h'
+alias du='du -h'
+alias mv='mv -i'
+alias cp='cp -i'
+alias rm='rm -i'
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+# Convenience (several carried over from your .bashrc).
+alias :q='exit'
+alias clear='clear -x'           # keep scrollback
+alias cls='clear'
+alias clera='clear'              # the cherished typo
+alias reload='exec zsh'
+alias path='print -l $path'
+alias ts='date +%Y%m%d_%H%M%S'
+alias serve='python3 -m http.server'
+
+# Directory hops (AUTO_PUSHD keeps a stack you can `cd -<TAB>` through).
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias -- -='cd -'
+
+# git.
+alias g='git'
+alias gs='git status -sb'
+alias ga='git add'
+alias gc='git commit'
+alias gca='git commit -a'
+alias gco='git checkout'
+alias gb='git branch'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gp='git push'
+alias gpl='git pull'
+alias gl='git log --oneline --graph --decorate -20'
+alias glog='git log --graph --pretty=format:"%C(auto)%h%d %s %C(blue)(%cr) %C(green)<%an>%C(reset)"'
+
+# OS-specific niceties.
+if [[ -n $IS_MAC ]]; then
+  alias o='open'
+  alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+  alias showfiles='defaults write com.apple.finder AppleShowAllFiles -bool true  && killall Finder'
+  alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder'
+  command -v pbcopy >/dev/null 2>&1 && alias copy='pbcopy'
+else
+  command -v xdg-open >/dev/null 2>&1 && alias o='xdg-open'
+  command -v wl-copy  >/dev/null 2>&1 && alias copy='wl-copy'
+fi
+
+# qemu (from your .bashrc) — only if it's installed here.
+command -v qemu-system-x86_64 >/dev/null 2>&1 && alias qemu='qemu-system-x86_64 -nographic'
+
+# ── Functions ──────────────────────────────────────────────────────
+# Make a directory (and parents) then enter it.
+mkcd() { mkdir -p -- "$1" && cd -- "$1"; }
+
+# Climb N directories: `up 3`.
+up() {
+  local n="${1:-1}" p=""
+  while (( n-- > 0 )); do p+="../"; done
+  cd -- "${p:-.}"
+}
+
+# Extract almost any archive: `extract foo.tar.zst`.
+extract() {
+  local f="$1"
+  [[ -f "$f" ]] || { print -u2 "extract: '$f' is not a file"; return 1; }
+  case "$f" in
+    *.tar.bz2|*.tbz2) tar xjf "$f" ;;
+    *.tar.gz|*.tgz)   tar xzf "$f" ;;
+    *.tar.xz|*.txz)   tar xJf "$f" ;;
+    *.tar.zst)        tar --zstd -xf "$f" ;;
+    *.tar)            tar xf "$f" ;;
+    *.bz2)            bunzip2 "$f" ;;
+    *.gz)             gunzip "$f" ;;
+    *.zip)            unzip "$f" ;;
+    *.rar)            unrar x "$f" ;;
+    *.7z)             7z x "$f" ;;
+    *.Z)              uncompress "$f" ;;
+    *) print -u2 "extract: don't know how to extract '$f'"; return 1 ;;
+  esac
+}
+
+# ── Plugins & tool integrations ────────────────────────────────────
+# Source the first readable candidate (covers brew and distro layouts).
+_source_plugin() {
+  local f
+  for f in "$@"; do
+    [[ -r "$f" ]] && { source "$f"; return 0; }
+  done
+  return 1
+}
+
+# zsh-autosuggestions — fish-style ghost-text suggestions.
+if _source_plugin \
+     "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" \
+     /usr/share/zsh/site-functions/zsh-autosuggestions.zsh \
+     /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh; then
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+fi
+
+# fzf — fuzzy finder (CTRL-R history, CTRL-T files, ALT-C cd).
+if command -v fzf >/dev/null 2>&1; then
+  if fzf --zsh >/dev/null 2>&1; then          # fzf ≥ 0.48 ships integration
+    source <(fzf --zsh)
+  else
+    _source_plugin \
+      "$BREW_PREFIX/opt/fzf/shell/key-bindings.zsh" \
+      /usr/share/fzf/key-bindings.zsh ~/.fzf.zsh
+    _source_plugin \
+      "$BREW_PREFIX/opt/fzf/shell/completion.zsh" \
+      /usr/share/fzf/completion.zsh
+  fi
+  if command -v fd >/dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='fd --type d --hidden --strip-cwd-prefix --exclude .git'
+  fi
+  export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --info=inline'
+  command -v bat >/dev/null 2>&1 && \
+    export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+  command -v eza >/dev/null 2>&1 && \
+    export FZF_ALT_C_OPTS="--preview 'eza --tree --level=2 --color=always {}'"
+fi
+
+# zoxide — smarter cd (`z foo`, `zi` for interactive).
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
+# direnv — per-directory environments (if ever installed).
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
+# GPG: required for signed git commits ($TTY avoids a subshell).
+export GPG_TTY=$TTY
+
+# zsh-syntax-highlighting — must be sourced after all widgets are defined.
+_source_plugin \
+  "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
+  /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh \
+  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# zsh-history-substring-search — load last, then bind ↑/↓ and vi k/j.
+if _source_plugin \
+     "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh" \
+     /usr/share/zsh/site-functions/zsh-history-substring-search.zsh \
+     /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh; then
+  bindkey -M viins '^[[A' history-substring-search-up
+  bindkey -M viins '^[OA' history-substring-search-up
+  bindkey -M viins '^[[B' history-substring-search-down
+  bindkey -M viins '^[OB' history-substring-search-down
+  bindkey -M vicmd 'k' history-substring-search-up
+  bindkey -M vicmd 'j' history-substring-search-down
+else
+  # Fallback: prefix-aware history search on the arrow keys.
+  autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+  zle -N up-line-or-beginning-search
+  zle -N down-line-or-beginning-search
+  bindkey -M viins '^[[A' up-line-or-beginning-search
+  bindkey -M viins '^[[B' down-line-or-beginning-search
+fi
+
+# ── Machine-local overrides (untracked) ────────────────────────────
+[[ -r "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

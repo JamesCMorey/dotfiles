@@ -1,0 +1,24 @@
+# ~/.zshenv — sourced for EVERY zsh (login, interactive, and scripts).
+#
+# Keep this minimal and side-effect-free: only environment that
+# non-interactive tools also need belongs here. All interactive setup
+# (prompt, aliases, completion, keybindings) lives in ~/.zshrc, and
+# PATH / login-only setup lives in ~/.zprofile.
+
+# ── XDG base directories ───────────────────────────────────────────
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
+# ── Preferred programs ─────────────────────────────────────────────
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+
+# ── Locale ─────────────────────────────────────────────────────────
+export LANG="${LANG:-en_US.UTF-8}"
+
+# ── less: raw colors, case-insensitive search, XDG-friendly history ─
+export LESS="-R -i -M -w"
+export LESSHISTFILE="$XDG_STATE_HOME/less/history"

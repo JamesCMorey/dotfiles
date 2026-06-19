@@ -28,6 +28,11 @@ SUSE_PACKAGES=(
     go
     man-pages
 
+    # Shell (zsh experience — mirrors Brewfile)
+    zsh
+    fzf zoxide bat fd eza
+    zsh-autosuggestions zsh-syntax-highlighting
+
     # Dependences
     npm # nvim mason pyright
 )
@@ -44,6 +49,15 @@ suse_packages() {
 	suse_patterns_cli+=(-t pattern "$pattern")
     done
     sudo zypper install "${suse_patterns_cli[@]}" "${SUSE_PACKAGES[@]}"
+}
+
+brew_packages() {
+    # macOS: install the package set declared in the Brewfile.
+    brew bundle --file="$(dirname "${BASH_SOURCE[0]}")/Brewfile"
+    # Homebrew leaves $(brew --prefix)/share group-writable, which makes zsh's
+    # compinit flag the completion dirs as insecure (and prompt on each new
+    # shell). Drop the group-write bit so completions load without a prompt.
+    chmod g-w "$(brew --prefix)/share" 2>/dev/null || true
 }
 
 dotfiles_stow() {

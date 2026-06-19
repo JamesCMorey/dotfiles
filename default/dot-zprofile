@@ -1,0 +1,29 @@
+# ~/.zprofile — sourced for LOGIN shells, after ~/.zshenv, before ~/.zshrc.
+#
+# PATH and one-time login setup belong here. On macOS this runs *after*
+# /etc/zprofile's `path_helper`, so the additions below take precedence.
+
+# ── Homebrew (Apple Silicon / Intel / Linuxbrew) ───────────────────
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+# ── Go ─────────────────────────────────────────────────────────────
+export GOPATH="$HOME/.local/go"
+export GOBIN="$GOPATH/bin"
+export GOCACHE="$XDG_CACHE_HOME/go-build"
+
+# ── PATH ───────────────────────────────────────────────────────────
+# `typeset -U` keeps entries unique; prepended dirs win over the rest.
+typeset -U path PATH
+path=(
+  "$HOME/.local/bin"
+  "$HOME/.npm-global/bin"
+  "$GOBIN"
+  $path
+)
+export PATH
