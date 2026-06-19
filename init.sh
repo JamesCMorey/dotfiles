@@ -23,7 +23,6 @@ SUSE_PACKAGES=(
     neovim tmux ripgrep
     gdb valgrind
     bear cmake meson
-    docker docker-compose
     postgresql18 # psql
     go
     man-pages
