@@ -181,10 +181,18 @@ off-hours compromise isn't invisible until morning):
    public/private flags, egress/request volume.
 2. **Diff** against `state/baselines.json` (rolling typical spend, known key fingerprints,
    normal egress).
-3. **Anomaly rules** — trip if any of: MTD spend jumps >X% or >$Y over projection · a **new
-   API key/token appeared** since last run · a bucket flipped **public** · egress spike >N× ·
-   failed-payment surge. (Thresholds X/Y/N tuned during implementation against observed
-   baselines.)
+3. **Anomaly rules** — trip if any of:
+   - **Spend ladder (per account, per calendar month):** alert when an account's
+     month-to-date spend first becomes **non-zero**, then each time it crosses the next rung
+     of a 1-2-5 ladder: **$5, $10, $20, $50, $100, $200, $500, $1,000, $2,000, $5,000, …**.
+     Each rung fires **once** per account per month. `state/baselines.json` tracks the highest
+     rung already alerted per account; it **resets when the billing month rolls over** (so the
+     first dollar of the new month re-alerts). Multiple rungs crossed between runs → a single
+     alert naming the highest rung reached.
+   - a **new API key/token appeared** since last run
+   - a bucket flipped **public**
+   - **egress spike** >N× baseline (N tuned during implementation)
+   - failed-payment surge
 4. **On trip → escalate to `claude -p`** with just the diff; Claude judges severity and
    writes a tight alert; `notify.sh` pushes it; it also lands in the dashboard **Alerts**
    section.
@@ -235,7 +243,8 @@ off-hours compromise isn't invisible until morning):
 
 - **Payment/transactions provider** for `txn-summary` (Stripe? VPS billing? other?).
 - **News topics** for `news-fetch`.
-- Concrete anomaly thresholds (X% / $Y / N×) — tuned against real baselines in P3.
+- Egress-spike multiplier (N×) and failed-payment-surge thresholds — tuned against real
+  baselines in P3. (Spend thresholds are **defined**: the 1-2-5 ladder in §5.)
 
 ## 10. Decisions Log
 
@@ -252,3 +261,6 @@ off-hours compromise isn't invisible until morning):
   tool-calling — unattended reliability and cost.
 - **Data sources:** local-only (EventKit calendar, IMAP gmail, `curl`/RSS) over claude.ai
   MCP connectors, which can't run headless.
+- **Spend alerting:** per-account, per-month 1-2-5 rung ladder (first non-zero, then
+  $5/$10/$20/$50/…), each rung once — predictable and tuning-free, over percentage/projection
+  thresholds.
