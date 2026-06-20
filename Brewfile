@@ -20,3 +20,6 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "zsh-history-substring-search"
 brew "zsh-completions"
+
+# Testing / dev tooling
+brew "bats-core"                    # bash test runner (briefing/ test suite)
