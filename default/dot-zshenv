@@ -22,3 +22,4 @@ export LANG="${LANG:-en_US.UTF-8}"
 # ── less: raw colors, case-insensitive search, XDG-friendly history ─
 export LESS="-R -i -M -w"
 export LESSHISTFILE="$XDG_STATE_HOME/less/history"
+. "$HOME/.cargo/env"

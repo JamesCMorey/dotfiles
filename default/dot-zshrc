@@ -1,7 +1,6 @@
 # ~/.zshrc — interactive shell configuration.
 #
-# Organized in labeled sections. Everything external is guarded with
-# `command -v` / file-existence checks so this file works on macOS
+# Organized in labeled sections. Everything external is guarded with `command -v` / file-existence checks so this file works on macOS
 # (Homebrew) and openSUSE (zypper) alike, and degrades gracefully when
 # an optional tool is missing. Managed via stow (dotfiles/default).
 
@@ -170,6 +169,9 @@ PROMPT="${_host_prefix}"'%F{blue}%(4~|%-1~/…/%2~|%~)%f${vcs_info_msg_0_}
 RPROMPT='%F{8}${_cmd_elapsed}%f'
 
 # ── Aliases ────────────────────────────────────────────────────────
+
+alias vim='nvim'
+
 # ls → eza (fall back to colored BSD/GNU ls).
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza --group-directories-first --icons=auto'
@@ -379,3 +381,7 @@ docker() {
 }
 # Quick teardown to free the VM's ~2 GB when you're done with Docker
 alias dockoff='colima stop'
+
+# Locally-patched eas-cli-local-build-plugin — macOS Tahoe `find-identity -v` keychain fix.
+# See tackl-frontend/docs/deployment-and-ota-architecture.md. Remove once upstream eas-cli ships the fix.
+export EAS_LOCAL_BUILD_PLUGIN_PATH="$HOME/.eas-local-plugin/node_modules/.bin/eas-cli-local-build-plugin"
