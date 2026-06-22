@@ -120,7 +120,7 @@ alias clera="clear"
 alias :q="exit"
 
 alias qemu="qemu-system-x86_64 -nographic"
-alias vi=vim
+alias vi=nvim
 alias vim=nvim
 
 alias ts="date +%Y%m%d_%H%M%S"

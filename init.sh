@@ -43,10 +43,13 @@ SUSE_PATTERNS=(
 )
 
 DEBIAN_PACKAGES=(
-    # Dev
+    # Dev. NOTE: neovim is intentionally absent — apt ships it too old for this
+    # config (needs 0.11+ `vim.lsp.config` + the nvim-treesitter `main` branch).
+    # install_neovim / install_tree_sitter fetch the upstream prebuilts instead.
     git stow
-    neovim tmux
+    tmux
     golang npm        # nvim mason / tooling
+    unzip             # nvim mason extracts LSP-server releases (e.g. clangd) with it
     postgresql-client # psql
     man-db
 
@@ -66,10 +69,54 @@ suse_packages() {
     sudo zypper install "${suse_patterns_cli[@]}" "${SUSE_PACKAGES[@]}"
 }
 
+# Neovim release channel for install_neovim — "stable" (latest release) or a
+# pinned tag like "v0.12.3" for reproducible provisioning.
+NVIM_CHANNEL="${NVIM_CHANNEL:-stable}"
+
+install_neovim() {
+    # apt's Neovim is too old for this config; fetch the official prebuilt.
+    local arch
+    case "$(uname -m)" in
+        x86_64)  arch=x86_64 ;;
+        aarch64) arch=arm64  ;;
+        *) echo "install_neovim: unsupported arch $(uname -m)" >&2; return 1 ;;
+    esac
+    local tarball="nvim-linux-${arch}.tar.gz" tmp
+    tmp="$(mktemp -d)"
+    curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_CHANNEL}/${tarball}" \
+        -o "$tmp/$tarball"
+    sudo rm -rf "/opt/nvim-linux-${arch}"
+    sudo tar -C /opt -xzf "$tmp/$tarball"
+    sudo ln -sfn "/opt/nvim-linux-${arch}" /opt/nvim
+    sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+    rm -rf "$tmp"
+}
+
+install_tree_sitter() {
+    # tree-sitter CLI for nvim-treesitter's `main` branch (it builds parsers
+    # with this). apt's is too old; fetch the latest prebuilt single binary.
+    local arch
+    case "$(uname -m)" in
+        x86_64)  arch=x64   ;;
+        aarch64) arch=arm64 ;;
+        *) echo "install_tree_sitter: unsupported arch $(uname -m)" >&2; return 1 ;;
+    esac
+    local tmp; tmp="$(mktemp -d)"
+    curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-${arch}.gz" \
+        -o "$tmp/ts.gz"
+    gunzip -f "$tmp/ts.gz"
+    sudo install -m755 "$tmp/ts" /usr/local/bin/tree-sitter
+    rm -rf "$tmp"
+}
+
 debian_packages() {
     # Debian/Ubuntu (apt) — the analog of suse_packages / brew_packages.
     sudo apt-get update
     sudo apt-get install -y "${DEBIAN_PACKAGES[@]}"
+
+    # Neovim + tree-sitter CLI from upstream prebuilts (apt's are too old).
+    install_neovim
+    install_tree_sitter
 
     # zsh-history-substring-search isn't packaged for Debian; clone it onto a
     # path the zshrc already searches (/usr/share/...).
@@ -99,13 +146,6 @@ brew_packages() {
 dotfiles_stow() {
     stow --dotfiles default git
 }
-
-vim_setup() {
-    mkdir -p ~/.vim/{backups,undodir,swapdir}
-
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    }
 
 terminal_theme() {
     # Spacegray 

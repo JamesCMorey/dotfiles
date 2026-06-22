@@ -171,6 +171,7 @@ RPROMPT='%F{8}${_cmd_elapsed}%f'
 # ── Aliases ────────────────────────────────────────────────────────
 
 alias vim='nvim'
+alias vi='nvim'
 
 # ls → eza (fall back to colored BSD/GNU ls).
 if command -v eza >/dev/null 2>&1; then

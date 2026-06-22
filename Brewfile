@@ -5,6 +5,7 @@
 brew "git"
 brew "stow"
 brew "neovim"
+brew "tree-sitter"                  # nvim-treesitter `main` branch builds parsers with this CLI
 brew "tmux"
 brew "wget"
 brew "gnupg"
