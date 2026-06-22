@@ -44,3 +44,5 @@ desktop.ini
 todo.md
 .cache
 test.c
+
+**/.claude/settings.local.json
