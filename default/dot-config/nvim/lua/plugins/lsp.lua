@@ -18,9 +18,8 @@ return {
 			})
 			vim.lsp.config("gopls", {})
 			-- vim.lsp.config("jedi_language_server", {})
-			vim.lsp.config("asmfmt", {})
 
-			vim.lsp.config("lua-language-server", {
+			vim.lsp.config("lua_ls", {
 				settings = {
 					Lua = {
 						diagnostics = {
@@ -33,6 +32,8 @@ return {
 					},
 				},
 			})
+
+			vim.lsp.enable({ "clangd", "gopls", "lua_ls" })
 		end,
 	},
 
@@ -40,7 +41,9 @@ return {
 
 	{
 		"mason-org/mason-lspconfig.nvim",
-		opts = {},
+		opts = {
+			ensure_installed = { "lua_ls", "gopls", "clangd" },
+		},
 		dependencies = {
 			{ "mason-org/mason.nvim", opts = {} },
 			"neovim/nvim-lspconfig",
