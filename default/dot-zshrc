@@ -370,17 +370,22 @@ fi
 [[ -r "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # ── colima: start the Docker VM on demand ──────────────────────────
-# colima runs only when actually needed (no login autostart), so idle
-# RAM is 0 GB. This wrapper transparently boots the VM on first use.
-docker() {
-  if ! colima status >/dev/null 2>&1; then
-    echo "colima not running — starting…" >&2
-    colima start
-  fi
-  command docker "$@"   # 'command' avoids recursing into this function
-}
-# Quick teardown to free the VM's ~2 GB when you're done with Docker
-alias dockoff='colima stop'
+# Only when colima is installed (macOS). On Linux with a native Docker
+# daemon there's no VM to boot, so this guard leaves `docker` untouched
+# rather than shadowing the real binary with a colima-starting wrapper.
+if command -v colima >/dev/null 2>&1; then
+  # colima runs only when actually needed (no login autostart), so idle
+  # RAM is 0 GB. This wrapper transparently boots the VM on first use.
+  docker() {
+    if ! colima status >/dev/null 2>&1; then
+      echo "colima not running — starting…" >&2
+      colima start
+    fi
+    command docker "$@"   # 'command' avoids recursing into this function
+  }
+  # Quick teardown to free the VM's ~2 GB when you're done with Docker
+  alias dockoff='colima stop'
+fi
 
 # Locally-patched eas-cli-local-build-plugin — macOS Tahoe `find-identity -v` keychain fix.
 # See tackl-frontend/docs/deployment-and-ota-architecture.md. Remove once upstream eas-cli ships the fix.
