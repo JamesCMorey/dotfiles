@@ -42,12 +42,49 @@ SUSE_PATTERNS=(
     devel_C_C++
 )
 
+DEBIAN_PACKAGES=(
+    # Dev
+    git stow
+    neovim tmux
+    golang npm        # nvim mason / tooling
+    postgresql-client # psql
+    man-db
+
+    # Shell (zsh experience — mirrors Brewfile / SUSE_PACKAGES).
+    # Debian names two binaries differently: bat→batcat, fd→fdfind
+    # (the debian_packages() function symlinks the canonical names below).
+    zsh
+    fzf zoxide bat fd-find eza ripgrep
+    zsh-autosuggestions zsh-syntax-highlighting
+)
+
 suse_packages() {
     suse_patterns_cli=()
     for pattern in "${SUSE_PATTERNS[@]}"; do
 	suse_patterns_cli+=(-t pattern "$pattern")
     done
     sudo zypper install "${suse_patterns_cli[@]}" "${SUSE_PACKAGES[@]}"
+}
+
+debian_packages() {
+    # Debian/Ubuntu (apt) — the analog of suse_packages / brew_packages.
+    sudo apt-get update
+    sudo apt-get install -y "${DEBIAN_PACKAGES[@]}"
+
+    # zsh-history-substring-search isn't packaged for Debian; clone it onto a
+    # path the zshrc already searches (/usr/share/...).
+    local hss=/usr/share/zsh-history-substring-search
+    if [[ ! -e "$hss/zsh-history-substring-search.zsh" ]]; then
+	sudo git clone --depth 1 \
+	    https://github.com/zsh-users/zsh-history-substring-search.git "$hss"
+    fi
+
+    # Debian renames two binaries (bat→batcat, fd→fdfind). Symlink the
+    # canonical names into ~/.local/bin (already on PATH via .zprofile) so the
+    # zshrc's fzf/preview integrations light up.
+    mkdir -p "$HOME/.local/bin"
+    [[ -x /usr/bin/fdfind ]] && ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd"
+    [[ -x /usr/bin/batcat ]] && ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
 }
 
 brew_packages() {

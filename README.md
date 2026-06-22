@@ -15,6 +15,7 @@ optional tool, so it runs anywhere.
 
 - **macOS:** `brew bundle` (uses `Brewfile`) — or `source init.sh && brew_packages`
 - **openSUSE:** `source init.sh && suse_packages`
+- **Debian/Ubuntu:** `source init.sh && debian_packages`
 
 Both lists include the modern shell stack the zshrc lights up when present:
 `fzf`, `zoxide`, `eza`, `bat`, `fd`, `ripgrep`, and the zsh

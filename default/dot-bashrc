@@ -148,4 +148,4 @@ export PATH="$PATH:~/.local/bin:$GOBIN"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export PATH=$HOME/.npm-global/bin:$PATH
-. "$HOME/.cargo/env"
+[ -r "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
