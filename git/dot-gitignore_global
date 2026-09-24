@@ -13,10 +13,8 @@
 *.stackdump
 
 # Build directories (e.g., CMake, Make)
-build/
 CMakeFiles/
 CMakeCache.txt
-Makefile
 cmake_install.cmake
 
 # Logs and debug output
@@ -39,7 +37,6 @@ Thumbs.db
 desktop.ini
 
 # Linux-specific
-*.lock
 
 todo.md
 .cache
