@@ -60,7 +60,10 @@ return {
 			"nvim-tree/nvim-web-devicons",
 		},
 		config = function()
-			require("nvim-tree").setup {}
+			require("nvim-tree").setup {
+				-- show files .gitignore lists (default hides them; `I` in the tree toggles live)
+				filters = { git_ignored = false },
+			}
 		end,
 	},
 
