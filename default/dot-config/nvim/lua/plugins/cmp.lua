@@ -50,9 +50,23 @@ return {
 	{
 		"nvim-mini/mini.comment",
 		version = false,
+		dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
 		config = function()
-			require("mini.comment").setup()
+			require("mini.comment").setup({
+				options = {
+					-- JSX/TSX: `{/* */}` inside markup, `//` in code
+					custom_commentstring = function()
+						return require("ts_context_commentstring").calculate_commentstring()
+							or vim.bo.commentstring
+					end,
+				},
+			})
 		end,
+	},
+	{
+		"JoosepAlviste/nvim-ts-context-commentstring",
+		lazy = true,
+		opts = { enable_autocmd = false },
 	},
 
 	-- Git Integration

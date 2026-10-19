@@ -11,7 +11,11 @@ return {
 		config = function()
 			require("nvim-treesitter").setup {}
 
-			local langs = { "c", "cpp", "lua", "python", "bash", "csv", "awk", "go", "scheme" }
+			local langs = {
+				"c", "cpp", "lua", "python", "bash", "csv", "awk", "go", "scheme",
+				-- TypeScript / web
+				"typescript", "tsx", "javascript", "jsdoc", "json", "html", "css", "yaml",
+			}
 
 			-- Block during headless so the Docker build waits for parsers to compile
 			if #vim.api.nvim_list_uis() == 0 then
@@ -20,10 +24,18 @@ return {
 				require("nvim-treesitter").install(langs)
 			end
 
+			-- FileType names differ from parser names (sh -> bash,
+			-- typescriptreact -> tsx), so ask nvim which filetypes each parser serves
+			local filetypes = {}
+			for _, lang in ipairs(langs) do
+				vim.list_extend(filetypes, vim.treesitter.language.get_filetypes(lang))
+			end
+
 			vim.api.nvim_create_autocmd("FileType", {
-				pattern = langs,
+				pattern = filetypes,
 				callback = function()
-					vim.treesitter.start()
+					-- pcall: a parser may still be compiling on first start
+					if not pcall(vim.treesitter.start) then return end
 					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 				end,
 			})
@@ -70,7 +82,8 @@ return {
 	{
 		'MeanderingProgrammer/render-markdown.nvim',
 		dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },
-		opts = {},
+		-- latex needs a parser + a converter this config doesn't install
+		opts = { latex = { enabled = false } },
 	},
 
 	-- Misc.

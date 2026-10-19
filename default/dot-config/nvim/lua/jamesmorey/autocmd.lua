@@ -22,6 +22,23 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
+-- ESLint fixes on save. The eslint server attaches only where the project has
+-- an eslint config (nvim-lspconfig's root_dir), so this is per-project too.
+local eslint_group = vim.api.nvim_create_augroup("jm_eslint_fix_on_save", { clear = true })
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = eslint_group,
+	callback = function(args)
+		local client = vim.lsp.get_client_by_id(args.data.client_id)
+		if not client or client.name ~= "eslint" then return end
+		vim.api.nvim_clear_autocmds({ group = eslint_group, buffer = args.buf })
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			group = eslint_group,
+			buffer = args.buf,
+			command = "silent! LspEslintFixAll",
+		})
+	end,
+})
+
 -- Prevent terminal from being included in buffer list
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function()
@@ -38,42 +55,36 @@ vim.api.nvim_create_autocmd("TermClose", {
 })
 
 -- ======================
--- quit NERDTree and terminal in event code window is closed
+-- :q in the last code window also closes the file tree, terminals and other
+-- aux windows, so nvim exits instead of leaving them behind.
+-- (QuitPre, not WinEnter: `nvim <dir>`, :checkhealth and :help + :only must
+-- not quit nvim.)
 -- ======================
 
-local function is_nerdtree_buf(buf)
-  local ft = vim.bo[buf].filetype
-  local name = vim.api.nvim_buf_get_name(buf)
-  return ft:lower() == "nerdtree" or name:match("NERD_tree_")
-end
-
 local function is_real_editor_buf(buf)
-  -- "Real" = normal file buffer (not terminal, not nerdtree, not nofile/help/qf/etc)
+  -- "Real" = normal file buffer (not terminal, file tree, nofile/help/qf/etc)
   if vim.bo[buf].buftype ~= "" then return false end
-  if is_nerdtree_buf(buf) then return false end
-  local name = vim.api.nvim_buf_get_name(buf)
-  return true
+  local ft = vim.bo[buf].filetype:lower()
+  return ft ~= "nvimtree" and ft ~= "nerdtree"
 end
 
-local function quit_if_only_aux_left()
-  local wins = vim.api.nvim_list_wins()
-
-  -- If any real editor window exists, do nothing
-  for _, win in ipairs(wins) do
-    local buf = vim.api.nvim_win_get_buf(win)
-    if is_real_editor_buf(buf) then
-      return
-    end
-  end
-
-  -- No real windows left: if what remains is only nerdtree/terminal/etc, quit
-  vim.cmd("qa")
-end
-
--- Trigger on window changes (this is the key vs BufEnter)
-vim.api.nvim_create_autocmd({ "WinEnter", "WinClosed", "BufWinEnter" }, {
+vim.api.nvim_create_autocmd("QuitPre", {
   callback = function()
-    -- Defer slightly so window list reflects the post-close state
-    vim.schedule(quit_if_only_aux_left)
+    local cur = vim.api.nvim_get_current_win()
+    if not is_real_editor_buf(vim.api.nvim_win_get_buf(cur)) then return end
+
+    local aux = {}
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if win ~= cur then
+        if is_real_editor_buf(vim.api.nvim_win_get_buf(win)) then
+          return -- another code window stays open: plain :q
+        end
+        table.insert(aux, win)
+      end
+    end
+
+    for _, win in ipairs(aux) do
+      pcall(vim.api.nvim_win_close, win, true)
+    end
   end,
 })
